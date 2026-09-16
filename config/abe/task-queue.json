@@ -33,13 +33,26 @@
     {
       "id": "ABE-008",
       "title": "Department evidence discovery and manifest reconciliation",
-      "status": "READY",
+      "status": "COMPLETE_FOUNDATION",
       "safe_autonomous": true,
       "acceptance": [
         "Discover repository evidence for DO-DEP-01 through DO-DEP-14",
         "Upgrade evidence status only from verifiable sources",
         "Preserve exactly 14 authoritative departments",
         "Do not perform external writes"
+      ],
+      "note": "Fail-closed discovery script added and enforced by CI. Repository references are treated only as leads; no unverified department status was upgraded."
+    },
+    {
+      "id": "ABE-009",
+      "title": "Autonomous runner orchestration foundation",
+      "status": "READY",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Define deterministic next-task selection from the controlled queue",
+        "Fail closed on unsafe or externally consequential tasks",
+        "Emit machine-readable runner state for CI/supervision",
+        "Preserve production_deploy=false and destructive_actions=false"
       ]
     }
   ]
