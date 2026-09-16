@@ -10,50 +10,11 @@
     "destructive_actions": false
   },
   "queue": [
-    {
-      "id": "ABE-005",
-      "title": "Repository source inventory",
-      "status": "COMPLETE",
-      "safe_autonomous": true
-    },
-    {
-      "id": "ABE-006",
-      "title": "Website integration pipeline scaffold",
-      "status": "COMPLETE_FOUNDATION",
-      "safe_autonomous": true,
-      "note": "Fail-closed public allowlist and public manifest builder are repository-controlled; production deployment remains disabled."
-    },
-    {
-      "id": "ABE-007",
-      "title": "Department build manifest DO-DEP-01 through DO-DEP-14",
-      "status": "COMPLETE_FOUNDATION",
-      "safe_autonomous": true,
-      "note": "Exactly 14 department IDs recorded; only DO-DEP-04 is marked verified baseline and missing evidence is not fabricated."
-    },
-    {
-      "id": "ABE-008",
-      "title": "Department evidence discovery and manifest reconciliation",
-      "status": "COMPLETE_FOUNDATION",
-      "safe_autonomous": true,
-      "acceptance": [
-        "Discover repository evidence for DO-DEP-01 through DO-DEP-14",
-        "Upgrade evidence status only from verifiable sources",
-        "Preserve exactly 14 authoritative departments",
-        "Do not perform external writes"
-      ],
-      "note": "Fail-closed discovery script added and enforced by CI. Repository references are treated only as leads; no unverified department status was upgraded."
-    },
-    {
-      "id": "ABE-009",
-      "title": "Autonomous runner orchestration foundation",
-      "status": "READY",
-      "safe_autonomous": true,
-      "acceptance": [
-        "Define deterministic next-task selection from the controlled queue",
-        "Fail closed on unsafe or externally consequential tasks",
-        "Emit machine-readable runner state for CI/supervision",
-        "Preserve production_deploy=false and destructive_actions=false"
-      ]
-    }
+    {"id":"ABE-005","title":"Repository source inventory","status":"COMPLETE","safe_autonomous":true},
+    {"id":"ABE-006","title":"Website integration pipeline scaffold","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"note":"Fail-closed public allowlist and public manifest builder are repository-controlled; production deployment remains disabled."},
+    {"id":"ABE-007","title":"Department build manifest DO-DEP-01 through DO-DEP-14","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"note":"Exactly 14 department IDs recorded; only DO-DEP-04 is marked verified baseline and missing evidence is not fabricated."},
+    {"id":"ABE-008","title":"Department evidence discovery and manifest reconciliation","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"acceptance":["Discover repository evidence for DO-DEP-01 through DO-DEP-14","Upgrade evidence status only from verifiable sources","Preserve exactly 14 authoritative departments","Do not perform external writes"],"note":"Fail-closed discovery script added and enforced by CI. Repository references are treated only as leads; no unverified department status was upgraded."},
+    {"id":"ABE-009","title":"Autonomous runner orchestration foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"acceptance":["Define deterministic next-task selection from the controlled queue","Fail closed on unsafe or externally consequential tasks","Emit machine-readable runner state for CI/supervision","Preserve production_deploy=false and destructive_actions=false"],"note":"Deterministic fail-closed runner and selector agreement are enforced by validation."},
+    {"id":"ABE-010","title":"Guarded execution plan and audit ledger foundation","status":"READY","safe_autonomous":true,"acceptance":["Translate the selected queue task into a repository-local execution plan only","Emit machine-readable audit evidence without external writes","Reject production deploy, destructive actions, secrets, and arbitrary queue commands","Preserve DO-DEP-01 through DO-DEP-14 authoritative scope"]}
   ]
 }
