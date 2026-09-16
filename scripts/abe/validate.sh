@@ -19,6 +19,7 @@ required=(
   "scripts/abe/runner.py"
   "scripts/abe/plan-execution.py"
   "scripts/abe/write-audit-ledger.py"
+  "scripts/abe/write-execution-receipt.py"
 )
 
 for f in "${required[@]}"; do
@@ -62,6 +63,7 @@ python3 scripts/abe/select-next-task.py
 python3 scripts/abe/runner.py
 python3 scripts/abe/plan-execution.py
 python3 scripts/abe/write-audit-ledger.py
+python3 scripts/abe/write-execution-receipt.py
 
 python3 - <<'PY'
 import json
@@ -94,7 +96,17 @@ assert ledger["authoritative_department_scope"] == ["DO-DEP-01", "DO-DEP-14"]
 assert all(value is False for value in ledger["controls"].values())
 assert set(ledger["evidence_sha256"]) == {"queue", "runner_state", "execution_plan"}
 assert all(len(value) == 64 for value in ledger["evidence_sha256"].values())
-print("ABE runner, execution plan, and audit ledger: PASS")
+receipt=json.loads(Path("build/abe/execution-receipt.json").read_text())
+assert receipt["schema_version"] == 1
+assert receipt["task_id"] == state["selected_task"]["id"]
+assert receipt["result"] == "FOUNDATION_VALIDATED"
+assert receipt["transition_authorized"] is False
+assert receipt["scope"] == "repository-local"
+assert receipt["authoritative_department_scope"] == ["DO-DEP-01", "DO-DEP-14"]
+assert all(value is False for value in receipt["controls"].values())
+assert set(receipt["evidence_sha256"]) == {"runner_state", "execution_plan", "audit_ledger"}
+assert all(len(value) == 64 for value in receipt["evidence_sha256"].values())
+print("ABE runner, execution plan, audit ledger, and execution receipt: PASS")
 PY
 
 echo "ABE validation PASS"
