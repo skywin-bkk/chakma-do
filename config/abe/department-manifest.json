@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "mode": "controlled-autonomous",
+  "scope": {
+    "first": "DO-DEP-01",
+    "last": "DO-DEP-14",
+    "count": 14,
+    "allow_expansion": false
+  },
+  "verified_baseline": "DO-DEP-04",
+  "evidence_policy": "record-only-verified-repository-evidence; never fabricate missing external records",
+  "departments": [
+    {"id":"DO-DEP-01","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-02","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-03","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-04","evidence_status":"VERIFIED_BASELINE"},
+    {"id":"DO-DEP-05","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-06","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-07","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-08","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-09","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-10","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-11","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-12","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-13","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"},
+    {"id":"DO-DEP-14","evidence_status":"UNVERIFIED_IN_REPOSITORY_MANIFEST"}
+  ]
+}
