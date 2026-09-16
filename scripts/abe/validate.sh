@@ -16,6 +16,7 @@ required=(
   "scripts/abe/build-public-manifest.py"
   "scripts/abe/discover-department-evidence.py"
   "scripts/abe/select-next-task.py"
+  "scripts/abe/runner.py"
 )
 
 for f in "${required[@]}"; do
@@ -56,15 +57,24 @@ PY
 python3 scripts/abe/build-public-manifest.py
 python3 scripts/abe/discover-department-evidence.py
 python3 scripts/abe/select-next-task.py
+python3 scripts/abe/runner.py
 
 python3 - <<'PY'
 import json
 from pathlib import Path
-state=json.loads(Path("generated/abe/runner-state.json").read_text())
+selector=json.loads(Path("generated/abe/runner-state.json").read_text())
+assert selector["schema_version"] == 1
+assert selector["blocked"] is False
+assert selector["safety"] == {"external_writes": False, "production_deploy": False, "destructive_actions": False}
+assert selector["selected_task"] is not None
+state=json.loads(Path("build/abe/runner-state.json").read_text())
 assert state["schema_version"] == 1
-assert state["blocked"] is False
-assert state["safety"] == {"external_writes": False, "production_deploy": False, "destructive_actions": False}
-assert state["selected_task"] is not None
+assert state["mode"] == "controlled-autonomous"
+assert state["safe_to_proceed"] is True
+assert state["selected_task"] == selector["selected_task"]
+assert state["production_deploy"] is False
+assert state["destructive_actions"] is False
+assert state["external_writes"] is False
 print("ABE runner state: PASS")
 PY
 
