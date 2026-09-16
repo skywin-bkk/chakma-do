@@ -13,33 +13,33 @@
     {
       "id": "ABE-005",
       "title": "Repository source inventory",
-      "status": "READY",
-      "safe_autonomous": true,
-      "acceptance": [
-        "Inventory repository-controlled source surfaces",
-        "Classify public/internal/restricted exposure",
-        "Do not infer or expose missing external assets"
-      ]
+      "status": "COMPLETE",
+      "safe_autonomous": true
     },
     {
       "id": "ABE-006",
       "title": "Website integration pipeline scaffold",
-      "status": "BLOCKED_BY_ABE-005",
+      "status": "COMPLETE_FOUNDATION",
       "safe_autonomous": true,
-      "acceptance": [
-        "Build non-production pipeline scaffold",
-        "Enforce explicit-public-only policy",
-        "No external deployment"
-      ]
+      "note": "Fail-closed public allowlist and public manifest builder are repository-controlled; production deployment remains disabled."
     },
     {
       "id": "ABE-007",
       "title": "Department build manifest DO-DEP-01 through DO-DEP-14",
-      "status": "BLOCKED_BY_ABE-005",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true,
+      "note": "Exactly 14 department IDs recorded; only DO-DEP-04 is marked verified baseline and missing evidence is not fabricated."
+    },
+    {
+      "id": "ABE-008",
+      "title": "Department evidence discovery and manifest reconciliation",
+      "status": "READY",
       "safe_autonomous": true,
       "acceptance": [
+        "Discover repository evidence for DO-DEP-01 through DO-DEP-14",
+        "Upgrade evidence status only from verifiable sources",
         "Preserve exactly 14 authoritative departments",
-        "Record source/evidence status without fabricating missing records"
+        "Do not perform external writes"
       ]
     }
   ]
