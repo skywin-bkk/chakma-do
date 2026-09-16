@@ -10,29 +10,37 @@ required=(
   "docs/ABE/BUILD_STATUS.md"
   ".github/pull_request_template.md"
   "config/abe/build-plan.json"
+  "config/abe/task-queue.json"
+  "config/abe/public-allowlist.json"
+  "scripts/abe/build-public-manifest.py"
 )
 
 for f in "${required[@]}"; do
   [[ -f "$f" ]] || { echo "::error::Missing required file: $f"; exit 1; }
 done
 
-# Fail on common committed secret/private-key signatures.
-if git grep -nE -- '-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----|AKIA[0-9A-Z]{16}' -- .   ':(exclude)scripts/abe/validate.sh' 2>/dev/null; then
+if git grep -nE -- '-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----|AKIA[0-9A-Z]{16}' -- . \
+  ':(exclude)scripts/abe/validate.sh' 2>/dev/null; then
   echo "::error::Potential credential/private key detected."
   exit 1
 fi
 
-# Validate JSON using Python from the hosted runner.
 python3 - <<'PY'
 import json
 from pathlib import Path
-p=Path("config/abe/build-plan.json")
-data=json.loads(p.read_text())
-assert data["schema_version"] == 1
-assert data["mode"] == "controlled-autonomous"
-assert data["production_deploy"] is False
-assert data["destructive_actions"] is False
-print("build-plan.json: PASS")
+plan=json.loads(Path("config/abe/build-plan.json").read_text())
+assert plan["schema_version"] == 1
+assert plan["mode"] == "controlled-autonomous"
+assert plan["production_deploy"] is False
+assert plan["destructive_actions"] is False
+queue=json.loads(Path("config/abe/task-queue.json").read_text())
+assert queue["authoritative_department_scope"] == ["DO-DEP-01", "DO-DEP-14"]
+allow=json.loads(Path("config/abe/public-allowlist.json").read_text())
+assert allow["policy"] == "explicit-public-only"
+assert all(x.get("classification") == "PUBLIC" for x in allow["assets"])
+print("ABE policy JSON: PASS")
 PY
+
+python3 scripts/abe/build-public-manifest.py
 
 echo "ABE validation PASS"
