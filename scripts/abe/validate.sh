@@ -17,6 +17,7 @@ required=(
   "scripts/abe/discover-department-evidence.py"
   "scripts/abe/select-next-task.py"
   "scripts/abe/runner.py"
+  "scripts/abe/plan-execution.py"
 )
 
 for f in "${required[@]}"; do
@@ -58,6 +59,7 @@ python3 scripts/abe/build-public-manifest.py
 python3 scripts/abe/discover-department-evidence.py
 python3 scripts/abe/select-next-task.py
 python3 scripts/abe/runner.py
+python3 scripts/abe/plan-execution.py
 
 python3 - <<'PY'
 import json
@@ -75,7 +77,14 @@ assert state["selected_task"] == selector["selected_task"]
 assert state["production_deploy"] is False
 assert state["destructive_actions"] is False
 assert state["external_writes"] is False
-print("ABE runner state: PASS")
+execution=json.loads(Path("build/abe/execution-plan.json").read_text())
+assert execution["schema_version"] == 1
+assert execution["safe_to_execute"] is True
+assert execution["task"] == state["selected_task"]
+assert execution["scope"] == "repository-local"
+assert execution["authoritative_department_scope"] == ["DO-DEP-01", "DO-DEP-14"]
+assert set(execution["forbidden_actions"]) == {"external-write", "production-deploy", "destructive-action", "secret-access", "arbitrary-command"}
+print("ABE runner and execution plan: PASS")
 PY
 
 echo "ABE validation PASS"
