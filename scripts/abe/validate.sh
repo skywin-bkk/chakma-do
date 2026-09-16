@@ -15,6 +15,7 @@ required=(
   "config/abe/public-allowlist.json"
   "scripts/abe/build-public-manifest.py"
   "scripts/abe/discover-department-evidence.py"
+  "scripts/abe/select-next-task.py"
 )
 
 for f in "${required[@]}"; do
@@ -37,6 +38,9 @@ assert plan["production_deploy"] is False
 assert plan["destructive_actions"] is False
 queue=json.loads(Path("config/abe/task-queue.json").read_text())
 assert queue["authoritative_department_scope"] == ["DO-DEP-01", "DO-DEP-14"]
+assert queue["rules"]["external_writes"] is False
+assert queue["rules"]["production_deploy"] is False
+assert queue["rules"]["destructive_actions"] is False
 manifest=json.loads(Path("config/abe/department-manifest.json").read_text())
 expected=[f"DO-DEP-{i:02d}" for i in range(1,15)]
 assert manifest["scope"]["count"] == 14
@@ -51,5 +55,17 @@ PY
 
 python3 scripts/abe/build-public-manifest.py
 python3 scripts/abe/discover-department-evidence.py
+python3 scripts/abe/select-next-task.py
+
+python3 - <<'PY'
+import json
+from pathlib import Path
+state=json.loads(Path("generated/abe/runner-state.json").read_text())
+assert state["schema_version"] == 1
+assert state["blocked"] is False
+assert state["safety"] == {"external_writes": False, "production_deploy": False, "destructive_actions": False}
+assert state["selected_task"] is not None
+print("ABE runner state: PASS")
+PY
 
 echo "ABE validation PASS"
