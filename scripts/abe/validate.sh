@@ -18,6 +18,7 @@ required=(
   "scripts/abe/select-next-task.py"
   "scripts/abe/runner.py"
   "scripts/abe/plan-execution.py"
+  "scripts/abe/write-audit-ledger.py"
 )
 
 for f in "${required[@]}"; do
@@ -60,6 +61,7 @@ python3 scripts/abe/discover-department-evidence.py
 python3 scripts/abe/select-next-task.py
 python3 scripts/abe/runner.py
 python3 scripts/abe/plan-execution.py
+python3 scripts/abe/write-audit-ledger.py
 
 python3 - <<'PY'
 import json
@@ -84,7 +86,15 @@ assert execution["task"] == state["selected_task"]
 assert execution["scope"] == "repository-local"
 assert execution["authoritative_department_scope"] == ["DO-DEP-01", "DO-DEP-14"]
 assert set(execution["forbidden_actions"]) == {"external-write", "production-deploy", "destructive-action", "secret-access", "arbitrary-command"}
-print("ABE runner and execution plan: PASS")
+ledger=json.loads(Path("build/abe/audit-ledger.json").read_text())
+assert ledger["schema_version"] == 1
+assert ledger["task_id"] == state["selected_task"]["id"]
+assert ledger["decision"] == "SAFE_TO_EXECUTE_REPOSITORY_LOCAL"
+assert ledger["authoritative_department_scope"] == ["DO-DEP-01", "DO-DEP-14"]
+assert all(value is False for value in ledger["controls"].values())
+assert set(ledger["evidence_sha256"]) == {"queue", "runner_state", "execution_plan"}
+assert all(len(value) == 64 for value in ledger["evidence_sha256"].values())
+print("ABE runner, execution plan, and audit ledger: PASS")
 PY
 
 echo "ABE validation PASS"
