@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "mode": "controlled-autonomous",
+  "authoritative_department_scope": ["DO-DEP-01", "DO-DEP-14"],
+  "verified_baseline": "DO-DEP-04",
+  "rules": {
+    "public_exposure": "explicit-public-only",
+    "external_writes": false,
+    "production_deploy": false,
+    "destructive_actions": false
+  },
+  "queue": [
+    {
+      "id": "ABE-005",
+      "title": "Repository source inventory",
+      "status": "READY",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Inventory repository-controlled source surfaces",
+        "Classify public/internal/restricted exposure",
+        "Do not infer or expose missing external assets"
+      ]
+    },
+    {
+      "id": "ABE-006",
+      "title": "Website integration pipeline scaffold",
+      "status": "BLOCKED_BY_ABE-005",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Build non-production pipeline scaffold",
+        "Enforce explicit-public-only policy",
+        "No external deployment"
+      ]
+    },
+    {
+      "id": "ABE-007",
+      "title": "Department build manifest DO-DEP-01 through DO-DEP-14",
+      "status": "BLOCKED_BY_ABE-005",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Preserve exactly 14 authoritative departments",
+        "Record source/evidence status without fabricating missing records"
+      ]
+    }
+  ]
+}
