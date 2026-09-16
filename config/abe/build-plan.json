@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "project": "D.O. Upgrade Version v2.0",
+  "mode": "controlled-autonomous",
+  "default_branch": "main",
+  "department_scope": {
+    "first": "DO-DEP-01",
+    "last": "DO-DEP-14"
+  },
+  "current_verified_baseline": "DO-DEP-04",
+  "public_exposure_policy": "explicit-public-only",
+  "production_deploy": false,
+  "destructive_actions": false,
+  "automation_policy": {
+    "validate_on_push": true,
+    "validate_on_pull_request": true,
+    "manual_dispatch": true,
+    "external_system_writes": false
+  },
+  "next_stage": "source-inventory-and-website-pipeline"
+}
