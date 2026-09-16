@@ -15,6 +15,7 @@ required=(
   "config/abe/public-allowlist.json"
   "scripts/abe/build-public-manifest.py"
   "scripts/abe/discover-department-evidence.py"
+  "scripts/abe/runner.py"
 )
 
 for f in "${required[@]}"; do
@@ -51,5 +52,18 @@ PY
 
 python3 scripts/abe/build-public-manifest.py
 python3 scripts/abe/discover-department-evidence.py
+python3 scripts/abe/runner.py
+python3 - <<'PY'
+import json
+from pathlib import Path
+state=json.loads(Path("build/abe/runner-state.json").read_text())
+assert state["schema_version"] == 1
+assert state["mode"] == "controlled-autonomous"
+assert state["production_deploy"] is False
+assert state["destructive_actions"] is False
+assert state["external_writes"] is False
+assert state["selected_task"] and state["selected_task"]["id"] == "ABE-009"
+print("ABE runner state: PASS")
+PY
 
 echo "ABE validation PASS"
