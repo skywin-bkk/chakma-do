@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import hashlib
 import json
 import os
 import subprocess
@@ -28,7 +29,20 @@ for item in assets:
     source = item.get("source")
     if not asset_id or not source:
         raise SystemExit("PUBLIC asset requires id and source")
-    public.append({"id": asset_id, "source": source, "classification": "PUBLIC"})
+    source_path = (ROOT / source).resolve()
+    try:
+        source_path.relative_to(ROOT.resolve())
+    except ValueError:
+        raise SystemExit(f"PUBLIC asset source escapes repository: {source}")
+    if not source_path.is_file():
+        raise SystemExit(f"PUBLIC asset source missing: {source}")
+    digest = hashlib.sha256(source_path.read_bytes()).hexdigest()
+    public.append({
+        "id": asset_id,
+        "source": source,
+        "classification": "PUBLIC",
+        "integrity": {"algorithm": "sha256", "digest": digest},
+    })
 
 source_commit = os.environ.get("GITHUB_SHA", "").strip()
 if not source_commit:
@@ -39,11 +53,12 @@ if len(source_commit) != 40 or any(c not in "0123456789abcdefABCDEF" for c in so
     raise SystemExit("invalid source commit for public artifact provenance")
 
 manifest = {
-    "schema_version": 2,
+    "schema_version": 3,
     "provenance": {
         "source_commit": source_commit.lower(),
         "publication_policy": POLICY,
         "classification_boundary": "PUBLIC_ONLY",
+        "integrity_algorithm": "sha256",
         "external_write_performed": False,
         "production_deploy_performed": False,
     },
@@ -52,4 +67,4 @@ manifest = {
 
 OUT.parent.mkdir(parents=True, exist_ok=True)
 OUT.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-print(f"public manifest PASS: {len(public)} explicitly PUBLIC assets; provenance={source_commit[:12]}")
+print(f"public manifest PASS: {len(public)} explicitly PUBLIC assets; provenance={source_commit[:12]}; integrity=sha256")
