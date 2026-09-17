@@ -1,0 +1,40 @@
+name: Website Preview
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - 'config/abe/public-allowlist.json'
+      - '.github/workflows/website-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate repository safety gates
+        shell: bash
+        run: bash scripts/abe/validate.sh
+      - name: Verify website entrypoint
+        shell: bash
+        run: |
+          test -f website/index.html
+          test -f website/assets/app.css
+          test -f website/assets/app.js
+      - name: Package browser-ready website
+        uses: actions/upload-artifact@v4
+        with:
+          name: do-website-preview
+          path: website/
+          if-no-files-found: error
+          retention-days: 14
