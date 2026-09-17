@@ -28,7 +28,9 @@ for path in htmls:
  for raw in src.links:
   if raw.startswith(('http://','https://','mailto:','tel:','javascript:','data:')): continue
   u=urlsplit(raw); rel=unquote(u.path)
-  target=path if not rel else (path.parent/rel).resolve()
+  # A fragment-only URL (for example #archive) targets the current HTML file.
+  # Keep the target absolute so the ROOT containment check is consistent.
+  target=path.resolve() if not rel else (path.parent/rel).resolve()
   try: target.relative_to(ROOT.resolve())
   except ValueError:
    errors.append(f'{path.name}: path escapes website: {raw}'); continue
