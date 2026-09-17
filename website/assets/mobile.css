@@ -1,0 +1,33 @@
+/* D.O. mobile public experience hardening layer */
+@media (max-width:900px){
+  .site-header{position:sticky;top:0}
+  .identity{gap:12px}
+  .menu-toggle{min-width:48px;min-height:48px}
+  .navrow nav{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .navrow nav>a,.nav-parent,.mega a{min-height:48px}
+  .hero{overflow-wrap:anywhere}
+  .network-copy,.section-head>div{min-width:0}
+  .network-visual{max-width:100%;overflow:hidden}
+  .text-link{white-space:normal}
+  .scorecard-table-wrap{max-width:100%;-webkit-overflow-scrolling:touch}
+}
+@media (max-width:560px){
+  body{overflow-x:hidden}
+  .identity-brand{min-width:0;max-width:calc(100% - 60px)}
+  .identity-brand span{min-width:0}
+  .identity-brand strong{overflow-wrap:anywhere}
+  .hero,.section{max-width:100%;overflow:hidden}
+  .hero h1,.section h1,.section h2{overflow-wrap:anywhere}
+  .actions a{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px}
+  .feature-grid>a,.editorial-grid a,.cards article,.grid article{min-width:0}
+  .values span,.values button{max-width:100%;overflow-wrap:anywhere}
+  .network-visual i{max-width:42%;white-space:normal;text-align:center;line-height:1.25}
+  .searchbox{max-width:100%}
+  .searchbox input{min-height:48px;font-size:16px}
+  .searchresults a{min-height:48px}
+  footer a{display:inline-block;padding:6px 2px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
