@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'website/**'
+      - 'scripts/abe/audit-website-links.py'
       - 'config/abe/public-allowlist.json'
       - '.github/workflows/website-preview.yml'
   workflow_dispatch:
@@ -25,6 +26,9 @@ jobs:
       - name: Validate repository safety gates
         shell: bash
         run: bash scripts/abe/validate.sh
+      - name: Audit master website completeness and links
+        shell: bash
+        run: python3 scripts/abe/audit-website-links.py
       - name: Verify website entrypoint
         shell: bash
         run: |
