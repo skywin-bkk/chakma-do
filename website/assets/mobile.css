@@ -11,6 +11,10 @@
   .network-visual{max-width:100%;overflow:hidden}
   .text-link{white-space:normal}
   .scorecard-table-wrap{max-width:100%;-webkit-overflow-scrolling:touch}
+  .searchbox,.cards,.feature-grid,.editorial-grid,.opportunity-band,.impact-strip,.values{max-width:100%}
+  .searchbox input{width:100%;box-sizing:border-box}
+  .values{display:flex;flex-wrap:wrap;gap:8px}
+  .values button{min-height:44px}
 }
 @media (max-width:560px){
   body{overflow-x:hidden}
@@ -19,13 +23,20 @@
   .identity-brand strong{overflow-wrap:anywhere}
   .hero,.section{max-width:100%;overflow:hidden}
   .hero h1,.section h1,.section h2{overflow-wrap:anywhere}
-  .actions a{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px}
-  .feature-grid>a,.editorial-grid a,.cards article,.grid article{min-width:0}
+  .actions{display:grid;grid-template-columns:1fr;gap:10px}
+  .actions a{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;box-sizing:border-box;text-align:center}
+  .feature-grid>a,.feature-grid>article,.editorial-grid a,.cards article,.grid article{min-width:0;overflow-wrap:anywhere}
   .values span,.values button{max-width:100%;overflow-wrap:anywhere}
+  .values button{flex:1 1 auto;padding-inline:12px}
   .network-visual i{max-width:42%;white-space:normal;text-align:center;line-height:1.25}
   .searchbox{max-width:100%}
   .searchbox input{min-height:48px;font-size:16px}
   .searchresults a{min-height:48px}
+  .pipeline{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px}
+  .pipeline span{flex:0 0 auto}
+  .opportunity-band{display:grid;grid-template-columns:1fr}
+  .opportunity-band a{min-height:48px;box-sizing:border-box}
+  .data-note{overflow-wrap:anywhere}
   footer a{display:inline-block;padding:6px 2px}
 }
 @media (prefers-reduced-motion:reduce){
