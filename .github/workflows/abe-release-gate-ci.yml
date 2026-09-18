@@ -1,0 +1,30 @@
+name: ABE Release Gate CI
+
+on:
+  push:
+    branches: [main, "abe/**", "build/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: abe-release-gate-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-release-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate ABE foundation
+        run: bash scripts/abe/validate.sh
+      - name: Build and validate repository-local public release gate evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-release-gate.py
+          python3 scripts/abe/validate-public-release-gate.py
