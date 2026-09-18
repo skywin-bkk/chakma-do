@@ -45,3 +45,10 @@ footer{border-top-color:var(--heritage-red)}
  .navrow nav.open .mega a{padding:10px 12px!important;border-radius:10px!important}
  .nav-tools{display:none!important}
 }
+
+/* Mobile display-title scale — global across public pages */
+@media(max-width:560px){
+ .hero h1,.section h1{font-size:clamp(2.35rem,10.5vw,3.25rem)!important;line-height:1.01!important;letter-spacing:-.045em!important}
+ .section h2{font-size:clamp(2rem,8.8vw,2.75rem)!important;line-height:1.05!important;letter-spacing:-.038em!important}
+ .network-section h2,.service h2{font-size:clamp(2rem,8.8vw,2.75rem)!important}
+}
