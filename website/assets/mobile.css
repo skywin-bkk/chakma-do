@@ -171,3 +171,11 @@ footer b{color:#fff}footer span{color:#cfc6ca}footer a{color:#f5e9df}
  .navrow nav.open .mega small{display:block!important;font-size:.7rem!important;margin-top:2px!important;color:#68756f!important}
  body:has(.navrow nav.open){overflow:hidden!important}
 }
+
+/* v6: language switch must remain visible in compact mobile header */
+.mobile-lang-toggle{display:none}
+@media(max-width:560px){
+ .identity-cta{display:flex!important;align-items:center!important;gap:7px!important;margin-left:auto!important}
+ .mobile-lang-toggle{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:46px!important;height:40px!important;padding:0 9px!important;border:1px solid rgba(8,83,49,.22)!important;border-radius:12px!important;background:#fffaf7!important;color:#087a45!important;font-weight:900!important;font-size:.7rem!important}
+ .identity-brand{max-width:calc(100% - 112px)!important}
+}
