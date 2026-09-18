@@ -117,3 +117,26 @@ footer span,footer small,footer p,.site-footer span,.site-footer small,.site-foo
  .hero,.section,.network-section{padding-left:16px!important;padding-right:16px!important}
  .feature-grid>a,.feature-grid>article{padding:17px 14px!important}
 }
+
+/* Public subpage mobile polish v6 */
+@media(max-width:560px){
+ .hero h1{font-size:clamp(2.15rem,11.2vw,3.35rem)!important;line-height:.98!important;letter-spacing:-.045em!important}
+ .hero .lead{font-size:1.08rem!important;line-height:1.65!important}
+ .section h2,.network-section h2,.service h2{font-size:clamp(1.8rem,8.3vw,2.55rem)!important;line-height:1.05!important;letter-spacing:-.035em!important}
+ .section-head{gap:16px!important}
+ .section-head>a{align-self:flex-start}
+ .feature-grid,.editorial-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .feature-grid>a,.feature-grid>article,.editorial-grid>a{min-width:0!important}
+ .feature-grid h3,.editorial-grid h3{font-size:1.02rem!important;line-height:1.28!important}
+ .feature-grid p,.editorial-grid p{font-size:.9rem!important;line-height:1.5!important}
+ .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .metric-grid>*{min-width:0!important}
+ .registry-toolbar,.registry-controls{display:grid!important;grid-template-columns:1fr!important}
+ .registry-toolbar input,.registry-toolbar select,.registry-controls input,.registry-controls select{width:100%!important;max-width:none!important}
+ footer .footer-inner,footer .wrap{min-width:0}
+}
+@media(max-width:360px){
+ .feature-grid,.editorial-grid,.metric-grid{grid-template-columns:1fr!important}
+ .hero h1{font-size:2.08rem!important}
+ .section h2,.network-section h2,.service h2{font-size:1.78rem!important}
+}
