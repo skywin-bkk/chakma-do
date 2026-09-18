@@ -171,3 +171,17 @@ a,button{-webkit-tap-highlight-color:rgba(169,31,45,.12)}
  .hero h1{max-width:1000px}
  .section-head{align-items:end}
 }
+
+/* Wide-screen flagship polish v9 */
+@media(min-width:1200px){
+ .hero,.section,.network-section,.service{padding-left:max(40px,calc((100vw - 1400px)/2))!important;padding-right:max(40px,calc((100vw - 1400px)/2))!important}
+ .hero{min-height:650px}
+ .hero h1{font-size:clamp(4.7rem,6vw,6.6rem)!important;max-width:1050px}
+ .hero .lead{max-width:800px}
+ .section h2,.network-section h2,.service h2{max-width:980px}
+ .feature-grid,.editorial-grid,.opportunity-band,.impact-strip{max-width:1400px;margin-left:auto;margin-right:auto}
+}
+@media(min-width:1600px){
+ .hero,.section,.network-section,.service{padding-left:calc((100vw - 1480px)/2)!important;padding-right:calc((100vw - 1480px)/2)!important}
+ .page-banner{max-width:1480px}
+}
