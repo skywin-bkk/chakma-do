@@ -52,3 +52,9 @@ footer{border-top-color:var(--heritage-red)}
  .section h2{font-size:clamp(2rem,8.8vw,2.75rem)!important;line-height:1.05!important;letter-spacing:-.038em!important}
  .network-section h2,.service h2{font-size:clamp(2rem,8.8vw,2.75rem)!important}
 }
+
+/* Mobile typography refinement v2 — reduce oversized display headings site-wide */
+@media(max-width:560px){
+ .hero h1,.section h1{font-size:clamp(2.05rem,8.7vw,2.7rem)!important;line-height:1.04!important;letter-spacing:-.04em!important}
+ .section h2,.network-section h2,.service h2{font-size:clamp(1.75rem,7.5vw,2.3rem)!important;line-height:1.08!important;letter-spacing:-.032em!important}
+}
