@@ -205,4 +205,4 @@ a,button{-webkit-tap-highlight-color:rgba(169,31,45,.12)}
 html[lang="my"] body{font-family:"Noto Sans Myanmar","Myanmar Text","Noto Sans",system-ui,sans-serif}
 html[lang="my"] .hero h1,html[lang="my"] .section h2{letter-spacing:0!important;line-height:1.35!important}
 .lang-toggle{min-width:42px;height:34px;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:transparent;color:inherit;font-weight:800;cursor:pointer}
-@media(max-width:560px){html[lang="my"] .hero h1{font-size:clamp(1.85rem,8vw,2.4rem)!important;line-height:1.42!important}html[lang="my"] .section h2{font-size:clamp(1.55rem,6.5vw,1.95rem)!important;line-height:1.45!important}.lang-toggle{display:none}}
+@media(max-width:560px){html[lang="my"] .hero h1{font-size:clamp(1.85rem,8vw,2.4rem)!important;line-height:1.42!important}html[lang="my"] .section h2{font-size:clamp(1.55rem,6.5vw,1.95rem)!important;line-height:1.45!important}.lang-toggle{display:inline-flex!important;align-items:center;justify-content:center;min-width:48px;padding:0 10px;font-size:.72rem}}
