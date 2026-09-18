@@ -97,3 +97,17 @@
  .home-community-portrait .values span{flex:0 0 auto;scroll-snap-align:start}
  .home-trust-layer{padding-top:42px;padding-bottom:42px}
 }
+
+/* Prestige navigation + footer */
+.site-header .utility a{text-decoration:none}
+footer{background:linear-gradient(135deg,#171725,#301721);border-top:4px solid var(--heritage-orange);padding-top:48px;padding-bottom:48px}
+footer b{color:#fff}footer span{color:#cfc6ca}footer a{color:#f5e9df}
+@media(max-width:560px){
+ .site-header{box-shadow:0 8px 26px rgba(37,15,23,.08)}
+ .identity{background:rgba(255,255,255,.97)}
+ .identity-brand small{display:block!important;font-size:.62rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .navrow nav{padding:10px 16px 22px;background:rgba(255,250,247,.99)}
+ .navrow nav>a,.nav-parent{padding:14px 4px;font-size:.9rem}
+ .mega a{border-radius:12px;margin:3px 0}
+ footer{padding:34px 20px;gap:18px}footer div{line-height:1.8}
+}
