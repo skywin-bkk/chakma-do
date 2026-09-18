@@ -111,3 +111,61 @@ footer b{color:#fff}footer span{color:#cfc6ca}footer a{color:#f5e9df}
  .mega a{border-radius:12px;margin:3px 0}
  footer{padding:34px 20px;gap:18px}footer div{line-height:1.8}
 }
+
+/* Mobile desktop-density mode v3 — preserve the flagship desktop composition on phones. */
+@media(max-width:560px){
+  .utility{display:none!important}
+  .site-header{position:sticky;top:0;z-index:1000;background:#fff}
+  .identity{min-height:58px;padding:6px 14px;border-bottom:1px solid rgba(20,45,38,.08)}
+  .identity-logo{width:42px;height:42px}
+  .identity-brand{max-width:calc(100% - 58px)}
+  .identity-brand strong{font-size:1rem;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .identity-brand small{font-size:.55rem!important}
+  .identity-cta>a{display:none!important}
+  .menu-toggle{display:grid!important;width:44px;height:44px;min-width:44px;border-radius:14px}
+  .navrow{min-height:0}
+  .navrow nav{display:none}
+  .navrow nav.open{display:flex;position:fixed;inset:58px 0 0 0;z-index:999;overflow-y:auto;flex-direction:column;padding:18px 20px 34px;background:rgba(255,250,247,.985)}
+  .nav-tools{display:none!important}
+
+  .hero,.section{padding:42px 18px}
+  .hero{display:grid!important;grid-template-columns:minmax(0,1.35fr) minmax(130px,.65fr)!important;gap:14px!important;align-items:end}
+  .hero h1{font-size:clamp(2.2rem,11vw,3.6rem)!important;line-height:.91!important;letter-spacing:-.065em}
+  .hero .lead{font-size:.92rem;line-height:1.55}
+  .hero aside{padding:20px 16px!important;border-radius:20px!important;align-self:end}
+  .hero aside strong{font-size:1.1rem}
+  .hero aside p{font-size:.78rem;line-height:1.45}
+  .hero .actions{grid-column:1/-1;display:flex!important;flex-wrap:wrap}
+  .hero .actions a{width:auto!important;min-height:44px;padding-inline:16px}
+
+  .section-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:end;gap:12px}
+  .section-head .text-link{max-width:120px;text-align:right}
+  .section h2{font-size:clamp(1.8rem,8.2vw,2.65rem);line-height:1.02;letter-spacing:-.045em}
+  .feature-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:0!important;border:1px solid rgba(20,45,38,.12)!important;border-radius:22px!important;overflow:hidden!important;background:#fff!important}
+  .feature-grid>a,.feature-grid>article{border:0!important;border-radius:0!important;box-shadow:none!important;padding:20px 16px!important;min-height:160px!important;border-right:1px solid rgba(20,45,38,.09)!important;border-bottom:1px solid rgba(20,45,38,.09)!important}
+  .feature-grid>a:nth-child(2n){border-right:0!important}
+  .feature-grid h3{font-size:1rem;margin:14px 0 6px}
+  .feature-grid p{font-size:.76rem}
+  .editorial-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+  .editorial-grid a{padding:17px 13px!important;border-radius:18px!important}
+  .editorial-grid strong{font-size:.95rem}
+  .editorial-grid p{font-size:.72rem}
+
+  .network-section{display:grid!important;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)!important;gap:10px!important;padding:44px 18px}
+  .network-copy h2{font-size:clamp(1.7rem,7.5vw,2.35rem)}
+  .network-copy .intro{font-size:.78rem}
+  .network-copy .actions{display:flex;flex-wrap:wrap}
+  .network-copy .actions a{width:auto;min-height:40px;font-size:.72rem;padding:9px 12px}
+  .network-visual{height:280px!important;transform:scale(.94);transform-origin:center}
+
+  .pipeline{gap:5px!important;overflow-x:auto!important}
+  .pipeline span{padding:10px 12px!important;font-size:.72rem!important}
+  .pipeline b{font-size:.8rem}
+  .opportunity-band{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .opportunity-band a{font-size:.78rem;padding:14px!important}
+  .service .actions{display:flex!important;flex-wrap:wrap}
+  .service .actions a{width:auto!important}
+
+  .page-banner{margin:12px 12px 0!important;border-radius:20px!important;overflow:hidden}
+  footer{padding:30px 18px;font-size:.78rem}
+}
