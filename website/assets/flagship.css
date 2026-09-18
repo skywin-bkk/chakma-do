@@ -58,3 +58,10 @@ footer{border-top-color:var(--heritage-red)}
  .hero h1,.section h1{font-size:clamp(2.05rem,8.7vw,2.7rem)!important;line-height:1.04!important;letter-spacing:-.04em!important}
  .section h2,.network-section h2,.service h2{font-size:clamp(1.75rem,7.5vw,2.3rem)!important;line-height:1.08!important;letter-spacing:-.032em!important}
 }
+
+/* Footer contrast repair — mobile + desktop */
+footer,.site-footer{background:#082f26!important;color:#f7f4ec!important}
+footer p,footer li,footer small,footer span,.site-footer p,.site-footer li,.site-footer small,.site-footer span{color:#f7f4ec!important;opacity:.88!important}
+footer a,.site-footer a{color:#fffaf0!important;opacity:1!important;text-decoration-color:rgba(255,255,255,.45)!important}
+footer a:hover,.site-footer a:hover{color:#fff!important}
+footer h2,footer h3,footer h4,.site-footer h2,.site-footer h3,.site-footer h4{color:#fff!important}
