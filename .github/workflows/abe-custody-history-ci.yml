@@ -1,0 +1,42 @@
+name: ABE Custody History CI
+
+on:
+  push:
+    branches: [main, "abe/**", "build/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: abe-custody-history-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-custody-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build validated upstream repository-local evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-manifest.py
+          python3 scripts/abe/validate-public-provenance.py
+          python3 scripts/abe/build-public-release-bundle.py
+          python3 scripts/abe/validate-public-release-bundle.py
+          python3 scripts/abe/build-public-release-readiness.py
+          python3 scripts/abe/validate-public-release-readiness.py
+          python3 scripts/abe/build-public-release-gate.py
+          python3 scripts/abe/validate-public-release-gate.py
+          python3 scripts/abe/build-public-release-custody.py
+          python3 scripts/abe/validate-public-release-custody.py
+      - name: Build and validate ABE-022 append-only custody history
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-release-custody-history.py
+          python3 scripts/abe/validate-public-release-custody-history.py
