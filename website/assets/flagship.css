@@ -78,3 +78,18 @@ footer h2,footer h3,footer h4,.site-footer h2,.site-footer h3,.site-footer h4{co
 footer,.site-footer{background:linear-gradient(135deg,#062e25,#102f2b)!important;border-top:4px solid #a91f2d!important}
 footer,footer *,footer a,footer a:visited,.site-footer,.site-footer *,.site-footer a,.site-footer a:visited{color:#f7f4ec!important}
 footer span,footer small,footer p,.site-footer span,.site-footer small,.site-footer p{opacity:.9!important}
+
+/* Mobile composition polish v4 */
+@media(max-width:560px){
+ body{overflow-x:hidden}
+ .hero{padding:40px 20px 46px!important}
+ .hero .lead,.section-head p,.network-copy p{font-size:.95rem!important;line-height:1.6!important}
+ .eyebrow{font-size:.68rem!important;letter-spacing:.14em!important}
+ .feature-grid h3{font-size:1rem!important}
+ .feature-grid p{font-size:.76rem!important;line-height:1.45!important}
+ .network-visual{height:285px!important}
+ .network-core{width:112px!important;height:112px!important;font-size:.9rem!important}
+ .opportunity-band a{min-height:54px!important;padding:14px!important}
+ .editorial-grid a{min-height:145px!important}
+ .page-banner{width:calc(100% - 24px)!important}
+}
