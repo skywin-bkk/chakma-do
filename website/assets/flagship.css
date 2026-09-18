@@ -153,3 +153,21 @@ a,button{-webkit-tap-highlight-color:rgba(169,31,45,.12)}
  .data-note{font-size:.76rem!important;line-height:1.5!important}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Responsive tablet bridge v8 — keep flagship composition between phone and desktop */
+@media(min-width:561px) and (max-width:900px){
+ .identity{padding-inline:24px}
+ .hero,.section,.network-section,.service{padding-left:28px!important;padding-right:28px!important}
+ .hero h1{font-size:clamp(3.1rem,7vw,4.7rem)!important}
+ .section h2,.network-section h2,.service h2{font-size:clamp(2.25rem,5vw,3.25rem)!important}
+ .feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .editorial-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .opportunity-band{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .network-section{grid-template-columns:minmax(0,.9fr) minmax(300px,1.1fr)!important;gap:28px!important}
+ .network-visual{min-width:0!important}
+ .page-banner{width:calc(100% - 48px)!important}
+}
+@media(min-width:901px){
+ .hero h1{max-width:1000px}
+ .section-head{align-items:end}
+}
