@@ -85,3 +85,15 @@
   .network-visual{height:330px}
   .page-banner{margin-bottom:4px}
 }
+
+/* Flagship home: identity first; planning metrics remain available in Community Data rather than dominating the public image. */
+.home-community-portrait{background:linear-gradient(135deg,#fff9f5,#f6f4f7)}
+.home-community-portrait .values{margin-top:30px}
+.home-community-portrait .values span{border-color:rgba(169,31,45,.18);background:#fff;color:var(--heritage-indigo)}
+.home-trust-layer{padding-top:64px;padding-bottom:64px}
+@media(max-width:560px){
+ .home-community-portrait{padding-top:44px;padding-bottom:44px}
+ .home-community-portrait .values{display:flex;flex-wrap:nowrap;overflow-x:auto;padding:3px 1px 12px;scroll-snap-type:x proximity}
+ .home-community-portrait .values span{flex:0 0 auto;scroll-snap-align:start}
+ .home-trust-layer{padding-top:42px;padding-bottom:42px}
+}
