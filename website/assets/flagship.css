@@ -65,3 +65,16 @@ footer p,footer li,footer small,footer span,.site-footer p,.site-footer li,.site
 footer a,.site-footer a{color:#fffaf0!important;opacity:1!important;text-decoration-color:rgba(255,255,255,.45)!important}
 footer a:hover,.site-footer a:hover{color:#fff!important}
 footer h2,footer h3,footer h4,.site-footer h2,.site-footer h3,.site-footer h4{color:#fff!important}
+
+/* Public UI polish v3 — compact mobile rhythm + complete footer readability */
+@media(max-width:560px){
+ .section,.network-section{padding-top:38px!important;padding-bottom:38px!important}
+ .section-head{margin-bottom:20px!important}
+ .section h2,.network-section h2,.service h2{font-size:clamp(1.6rem,6.7vw,2.05rem)!important;line-height:1.1!important;letter-spacing:-.028em!important}
+ .hero h1,.section h1{font-size:clamp(1.9rem,8vw,2.45rem)!important;line-height:1.06!important;letter-spacing:-.034em!important}
+ .feature-grid>a,.feature-grid>article{min-height:150px!important;padding:19px 16px!important}
+ footer,.site-footer{padding:30px 20px!important}
+}
+footer,.site-footer{background:linear-gradient(135deg,#062e25,#102f2b)!important;border-top:4px solid #a91f2d!important}
+footer,footer *,footer a,footer a:visited,.site-footer,.site-footer *,.site-footer a,.site-footer a:visited{color:#f7f4ec!important}
+footer span,footer small,footer p,.site-footer span,.site-footer small,.site-footer p{opacity:.9!important}
