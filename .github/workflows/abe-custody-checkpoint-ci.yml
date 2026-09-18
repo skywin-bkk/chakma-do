@@ -1,0 +1,47 @@
+name: ABE Custody Checkpoint CI
+
+on:
+  push:
+    branches: [main, "abe/**", "build/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: abe-custody-checkpoint-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-custody-checkpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build validated upstream repository-local evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-manifest.py
+          python3 scripts/abe/validate-public-provenance.py
+          python3 scripts/abe/build-public-release-bundle.py
+          python3 scripts/abe/validate-public-release-bundle.py
+          python3 scripts/abe/build-public-release-readiness.py
+          python3 scripts/abe/validate-public-release-readiness.py
+          python3 scripts/abe/build-public-release-gate.py
+          python3 scripts/abe/validate-public-release-gate.py
+          python3 scripts/abe/build-public-release-custody.py
+          python3 scripts/abe/validate-public-release-custody.py
+          python3 scripts/abe/build-public-release-custody-history.py
+          python3 scripts/abe/validate-public-release-custody-history.py
+      - name: Build and validate ABE-023 custody history checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-release-custody-checkpoint.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint.py
+          cp build/abe/public-release-custody-checkpoint.json /tmp/checkpoint.json
+          python3 scripts/abe/build-public-release-custody-checkpoint.py
+          cmp -s /tmp/checkpoint.json build/abe/public-release-custody-checkpoint.json
