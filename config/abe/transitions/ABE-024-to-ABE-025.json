@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "transition_id": "ABE-024-to-ABE-025",
+  "source_head": "376dd8ce4a0d3933228b03fd4ab1d6f7095f4285",
+  "source_queue_blob": "467b3aa145dcdcd18f2e9107e175509dab6b9203",
+  "validated_completion_gate": "bf481e49bb0d63685a1bf6e633c74bf04ec304ee",
+  "fresh_ci": {
+    "head": "376dd8ce4a0d3933228b03fd4ab1d6f7095f4285",
+    "workflow_count": 6,
+    "required_conclusion": "success"
+  },
+  "authoritative_delta": {
+    "complete": {
+      "id": "ABE-024",
+      "from": "READY",
+      "to": "COMPLETE_FOUNDATION"
+    },
+    "append": {
+      "id": "ABE-025",
+      "title": "Public release checkpoint continuity append-only history foundation",
+      "status": "READY",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Accept only independently validated ABE-024 checkpoint-continuity records",
+        "Emit deterministic repository-local append-only checkpoint-continuity history",
+        "Require strictly monotonic history sequence numbers and exact predecessor continuity digests",
+        "Bind every history entry to exact source identity, custody-history identity, and checkpoint-continuity identity",
+        "Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale identity, digest mismatch, or non-PUBLIC evidence fail-closed",
+        "Do not authorize or perform publication, production deployment, external writes, destructive actions, or secret access",
+        "Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"
+      ]
+    }
+  },
+  "locked_invariants": {
+    "authoritative_department_scope": ["DO-DEP-01", "DO-DEP-14"],
+    "verified_baseline": "DO-DEP-04",
+    "public_exposure": "explicit-public-only",
+    "external_writes": false,
+    "production_deploy": false,
+    "destructive_actions": false
+  },
+  "authorization": {
+    "publication": false,
+    "production_deploy": false,
+    "external_writes": false,
+    "destructive_actions": false,
+    "secret_access": false
+  }
+}
