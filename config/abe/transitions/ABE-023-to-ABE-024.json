@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "transition_id": "ABE-023-to-ABE-024",
+  "validated_source_commit": "d7a185fc904ade1c11dd9f1f5e1e409b4fd325a2",
+  "validated_source_queue_blob": "042128e853227d20a4b6c6e172639a2941078c35",
+  "validated_ci": {
+    "workflow_count": 5,
+    "all_completed_successfully": true,
+    "abe_custody_checkpoint_ci_run": 10,
+    "abe_custody_ci_run": 21
+  },
+  "authoritative_mutation": {
+    "complete_task": "ABE-023",
+    "required_from_status": "READY",
+    "to_status": "COMPLETE_FOUNDATION",
+    "completion_note": "Custody-history checkpoint builder and independent fail-closed validation are present on authoritative main; fresh validation gate head d7a185fc904ade1c11dd9f1f5e1e409b4fd325a2 completed all five push workflows successfully before this transition.",
+    "append_ready_task": {
+      "id": "ABE-024",
+      "title": "Public release custody checkpoint continuity foundation",
+      "status": "READY",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Accept only independently validated ABE-023 checkpoint evidence",
+        "Maintain strictly monotonic checkpoint sequence numbers and exact predecessor checkpoint digests",
+        "Bind continuity to exact source identity and custody-history identity",
+        "Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale identity, digest mismatch, or non-PUBLIC evidence fail-closed",
+        "Do not authorize or perform publication, production deployment, external writes, destructive actions, or secret access",
+        "Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"
+      ]
+    }
+  },
+  "locked_invariants": {
+    "authoritative_department_scope": ["DO-DEP-01", "DO-DEP-14"],
+    "verified_baseline": "DO-DEP-04",
+    "public_exposure": "explicit-public-only",
+    "external_writes": false,
+    "production_deploy": false,
+    "destructive_actions": false
+  },
+  "authorization": {
+    "publication": false,
+    "production_deploy": false,
+    "external_writes": false,
+    "destructive_actions": false,
+    "secret_access": false
+  }
+}
