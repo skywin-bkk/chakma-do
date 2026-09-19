@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Fail-closed validator for a reviewed ABE authoritative queue transition manifest."""
+"""Fail-closed validator for a reviewed ABE authoritative queue transition manifest.
+
+The manifest is historical evidence. Validate its source queue at the recorded
+source commit instead of incorrectly requiring today's authoritative queue to
+remain byte-identical to that historical source.
+"""
 import hashlib
 import json
 import subprocess
@@ -25,15 +30,22 @@ def git_blob_sha(data: bytes) -> str:
     return hashlib.sha1(header + data).hexdigest()
 
 
+def source_queue_bytes(source_commit: str) -> bytes:
+    try:
+        return subprocess.check_output(
+            ["git", "show", f"{source_commit}:config/abe/task-queue.json"], cwd=ROOT
+        )
+    except subprocess.CalledProcessError:
+        fail("validated source queue cannot be read from recorded source commit")
+
+
 def main() -> None:
-    qbytes = QUEUE.read_bytes()
-    queue = json.loads(qbytes)
+    current_queue = json.loads(QUEUE.read_text())
     manifest = json.loads(MANIFEST.read_text())
 
     if manifest.get("schema_version") != 1 or manifest.get("transition_id") != "ABE-023-to-ABE-024":
         fail("unexpected transition manifest identity")
-    if git_blob_sha(qbytes) != manifest.get("validated_source_queue_blob"):
-        fail("authoritative queue no longer matches validated source blob")
+
     source_commit = manifest.get("validated_source_commit", "")
     if len(source_commit) != 40:
         fail("validated source commit is malformed")
@@ -43,10 +55,18 @@ def main() -> None:
     except subprocess.CalledProcessError:
         fail("validated source commit is not an ancestor of HEAD")
 
-    if queue.get("authoritative_department_scope") != ["DO-DEP-01", "DO-DEP-14"]:
-        fail("authoritative department scope changed")
-    if queue.get("verified_baseline") != "DO-DEP-04" or queue.get("rules") != LOCKED_RULES:
-        fail("baseline or safety rules changed")
+    qbytes = source_queue_bytes(source_commit)
+    queue = json.loads(qbytes)
+    if git_blob_sha(qbytes) != manifest.get("validated_source_queue_blob"):
+        fail("recorded source queue does not match validated source blob")
+
+    # Safety invariants must hold both at the historical source and now. This
+    # permits bounded queue advancement without weakening the fail-closed gate.
+    for label, candidate in (("source", queue), ("current", current_queue)):
+        if candidate.get("authoritative_department_scope") != ["DO-DEP-01", "DO-DEP-14"]:
+            fail(f"{label} authoritative department scope changed")
+        if candidate.get("verified_baseline") != "DO-DEP-04" or candidate.get("rules") != LOCKED_RULES:
+            fail(f"{label} baseline or safety rules changed")
 
     mutation = manifest.get("authoritative_mutation", {})
     if mutation.get("complete_task") != "ABE-023" or mutation.get("required_from_status") != "READY" or mutation.get("to_status") != "COMPLETE_FOUNDATION":
@@ -63,6 +83,13 @@ def main() -> None:
     if not current or current.get("status") != "READY" or current.get("safe_autonomous") is not True:
         fail("ABE-023 is not the expected safe READY task")
 
+    # Current queue must retain the transitioned tasks; later bounded progress is allowed.
+    current_tasks = {t.get("id"): t for t in current_queue.get("queue", [])}
+    if current_tasks.get("ABE-023", {}).get("status") != "COMPLETE_FOUNDATION":
+        fail("current queue lost ABE-023 completion")
+    if current_tasks.get("ABE-024", {}).get("status") not in {"READY", "COMPLETE_FOUNDATION"}:
+        fail("current queue lost or regressed ABE-024")
+
     ci = manifest.get("validated_ci", {})
     if ci.get("workflow_count") != 5 or ci.get("all_completed_successfully") is not True:
         fail("manifest does not record the required successful validation gate")
@@ -70,7 +97,7 @@ def main() -> None:
     if set(auth) != {"publication", "production_deploy", "external_writes", "destructive_actions", "secret_access"} or any(auth.values()):
         fail("transition manifest attempts consequential authorization")
 
-    print("PASS: ABE-023 -> ABE-024 authoritative transition manifest is bounded, source-bound, metadata-preserving, and non-consequential")
+    print("PASS: ABE-023 -> ABE-024 historical transition evidence is source-bound, current safety invariants are intact, and bounded later queue progress is permitted")
 
 
 if __name__ == "__main__":
