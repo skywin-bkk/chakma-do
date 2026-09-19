@@ -1,0 +1,49 @@
+name: ABE Custody Checkpoint Continuity CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build prerequisite custody evidence
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-release-custody.py
+          python3 scripts/abe/validate-public-release-custody.py
+          python3 scripts/abe/build-public-release-custody-history.py
+          python3 scripts/abe/validate-public-release-custody-history.py
+          python3 scripts/abe/build-public-release-custody-checkpoint.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint.py
+      - name: Build and independently validate checkpoint continuity
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint-continuity.py
+          cp build/abe/public-release-custody-checkpoint-continuity.json /tmp/checkpoint-continuity.json
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity.py
+          cmp -s /tmp/checkpoint-continuity.json build/abe/public-release-custody-checkpoint-continuity.json
+      - name: Assert fail-closed safety invariants
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('config/abe/task-queue.json').read_text())
+          assert q['authoritative_department_scope']==['DO-DEP-01','DO-DEP-14']
+          assert q['verified_baseline']=='DO-DEP-04'
+          assert q['rules']=={'public_exposure':'explicit-public-only','external_writes':False,'production_deploy':False,'destructive_actions':False}
+          c=json.loads(Path('build/abe/public-release-custody-checkpoint-continuity.json').read_text())
+          assert c['classification_boundary']=='PUBLIC_ONLY'
+          assert c['authorizes_deployment'] is False
+          assert c['external_write_performed'] is False
+          assert c['production_deploy_performed'] is False
+          assert c['destructive_action_performed'] is False
+          assert c['secret_access_performed'] is False
+          PY
