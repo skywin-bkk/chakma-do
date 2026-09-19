@@ -15,6 +15,14 @@ jobs:
       - name: Build prerequisite custody evidence
         run: |
           set -euo pipefail
+          python3 scripts/abe/build-public-manifest.py
+          python3 scripts/abe/validate-public-provenance.py
+          python3 scripts/abe/build-public-release-bundle.py
+          python3 scripts/abe/validate-public-release-bundle.py
+          python3 scripts/abe/build-public-release-readiness.py
+          python3 scripts/abe/validate-public-release-readiness.py
+          python3 scripts/abe/build-public-release-gate.py
+          python3 scripts/abe/validate-public-release-gate.py
           python3 scripts/abe/build-public-release-custody.py
           python3 scripts/abe/validate-public-release-custody.py
           python3 scripts/abe/build-public-release-custody-history.py
