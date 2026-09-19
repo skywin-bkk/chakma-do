@@ -1,0 +1,38 @@
+name: ABE Authoritative Transition CI
+
+on:
+  push:
+    branches: [main, "abe/**", "build/**"]
+    paths:
+      - "config/abe/task-queue.json"
+      - "config/abe/transitions/**"
+      - "scripts/abe/build-authoritative-queue-transition.py"
+      - "scripts/abe/validate-authoritative-queue-transition.py"
+      - ".github/workflows/abe-authoritative-transition-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "config/abe/task-queue.json"
+      - "config/abe/transitions/**"
+      - "scripts/abe/build-authoritative-queue-transition.py"
+      - "scripts/abe/validate-authoritative-queue-transition.py"
+      - ".github/workflows/abe-authoritative-transition-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: abe-authoritative-transition-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-transition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate bounded authoritative transition manifest
+        run: python3 scripts/abe/validate-authoritative-queue-transition.py
