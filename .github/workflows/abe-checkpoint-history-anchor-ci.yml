@@ -1,0 +1,108 @@
+name: ABE Checkpoint History Anchor CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build validated prerequisite evidence chain
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-manifest.py
+          python3 scripts/abe/validate-public-provenance.py
+          python3 scripts/abe/build-public-release-bundle.py
+          python3 scripts/abe/validate-public-release-bundle.py
+          python3 scripts/abe/build-public-release-readiness.py
+          python3 scripts/abe/validate-public-release-readiness.py
+          python3 scripts/abe/build-public-release-gate.py
+          python3 scripts/abe/validate-public-release-gate.py
+          python3 scripts/abe/build-public-release-custody.py
+          python3 scripts/abe/validate-public-release-custody.py
+          python3 scripts/abe/build-public-release-custody-history.py
+          python3 scripts/abe/validate-public-release-custody-history.py
+          python3 scripts/abe/build-public-release-custody-checkpoint.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint.py
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint-continuity.py
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity-history.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint-continuity-history.py
+      - name: Build and independently validate ABE-026 anchor
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-release-checkpoint-history-anchor.py
+          python3 scripts/abe/validate-public-release-checkpoint-history-anchor.py
+          cp build/abe/public-release-checkpoint-history-anchor.json /tmp/anchor.json
+          python3 scripts/abe/build-public-release-checkpoint-history-anchor.py
+          cmp -s /tmp/anchor.json build/abe/public-release-checkpoint-history-anchor.json
+      - name: Reject anchor mutation and stale terminal identity
+        run: |
+          set -euo pipefail
+          cp build/abe/public-release-checkpoint-history-anchor.json /tmp/anchor-good.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/public-release-checkpoint-history-anchor.json')
+          a=json.loads(p.read_text())
+          a['classification_boundary']='INTERNAL'
+          p.write_text(json.dumps(a, indent=2, sort_keys=True)+'\n')
+          PY
+          if python3 scripts/abe/validate-public-release-checkpoint-history-anchor.py; then
+            echo 'validator accepted non-PUBLIC mutated anchor' >&2; exit 1
+          fi
+          cp /tmp/anchor-good.json build/abe/public-release-checkpoint-history-anchor.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/public-release-checkpoint-history-anchor.json')
+          a=json.loads(p.read_text())
+          a['terminal_sequence']=a['terminal_sequence']+1
+          p.write_text(json.dumps(a, indent=2, sort_keys=True)+'\n')
+          PY
+          if python3 scripts/abe/validate-public-release-checkpoint-history-anchor.py; then
+            echo 'validator accepted stale/non-terminal anchor' >&2; exit 1
+          fi
+          cp /tmp/anchor-good.json build/abe/public-release-checkpoint-history-anchor.json
+      - name: Reject history rollback and mutation
+        run: |
+          set -euo pipefail
+          cp build/abe/public-release-custody-checkpoint-continuity-history.json /tmp/history-good.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/public-release-custody-checkpoint-continuity-history.json')
+          h=json.loads(p.read_text())
+          h['records'][-1]['history_sequence'] += 1
+          p.write_text(json.dumps(h, indent=2, sort_keys=True)+'\n')
+          PY
+          if python3 scripts/abe/validate-public-release-checkpoint-history-anchor.py; then
+            echo 'validator accepted history rollback/gap mutation' >&2; exit 1
+          fi
+          cp /tmp/history-good.json build/abe/public-release-custody-checkpoint-continuity-history.json
+          python3 scripts/abe/validate-public-release-checkpoint-history-anchor.py
+      - name: Assert fail-closed safety invariants
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('config/abe/task-queue.json').read_text())
+          assert q['authoritative_department_scope']==['DO-DEP-01','DO-DEP-14']
+          assert q['verified_baseline']=='DO-DEP-04'
+          assert q['rules']=={'public_exposure':'explicit-public-only','external_writes':False,'production_deploy':False,'destructive_actions':False}
+          a=json.loads(Path('build/abe/public-release-checkpoint-history-anchor.json').read_text())
+          assert a['stage']=='ABE-026'
+          assert a['classification_boundary']=='PUBLIC_ONLY'
+          assert a['authorizes_deployment'] is False
+          assert a['external_write_performed'] is False
+          assert a['production_deploy_performed'] is False
+          assert a['publication_performed'] is False
+          assert a['destructive_action_performed'] is False
+          assert a['secret_access_performed'] is False
+          PY
