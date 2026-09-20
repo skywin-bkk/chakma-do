@@ -6,9 +6,9 @@ QUEUE=ROOT/"config/abe/task-queue.json"; SNAP=ROOT/"build/abe/anchored-public-re
 def digest(v): return hashlib.sha256(json.dumps(v,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode()).hexdigest()
 def load(p): return json.loads(p.read_text(encoding="utf-8"))
 q,s,c=map(load,(QUEUE,SNAP,CONT))
-if q.get("authoritative_scope")!=[f"DO-DEP-{i:02d}" for i in range(1,15)] or q.get("verified_baseline")!="DO-DEP-04": raise SystemExit("scope/baseline drift")
+if q.get("authoritative_department_scope")!=["DO-DEP-01","DO-DEP-14"] or q.get("verified_baseline")!="DO-DEP-04": raise SystemExit("scope/baseline drift")
 if q.get("rules")!={"public_exposure":"explicit-public-only","external_writes":False,"production_deploy":False,"destructive_actions":False}: raise SystemExit("safety rules drift")
-if not any(t.get("id")=="ABE-028" and t.get("status")=="READY" and t.get("safe_autonomous") is True for t in q.get("tasks",[])): raise SystemExit("ABE-028 not authoritative READY")
+if not any(t.get("id")=="ABE-028" and t.get("status")=="READY" and t.get("safe_autonomous") is True for t in q.get("queue",[])): raise SystemExit("ABE-028 not authoritative READY")
 if s.get("stage")!="ABE-027" or s.get("snapshot_state")!="PASS_REPOSITORY_LOCAL_ONLY": raise SystemExit("invalid current snapshot")
 sd=s.get("snapshot_digest",{}); sc={k:v for k,v in s.items() if k!="snapshot_digest"}
 if sd.get("algorithm")!="sha256" or sd.get("digest")!=digest(sc): raise SystemExit("current snapshot digest mismatch")
