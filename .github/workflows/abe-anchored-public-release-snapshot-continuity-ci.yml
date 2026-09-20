@@ -1,0 +1,115 @@
+name: ABE Anchored Public Release Snapshot Continuity CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build validated prerequisite evidence chain
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-manifest.py
+          python3 scripts/abe/validate-public-provenance.py
+          python3 scripts/abe/build-public-release-bundle.py
+          python3 scripts/abe/validate-public-release-bundle.py
+          python3 scripts/abe/build-public-release-readiness.py
+          python3 scripts/abe/validate-public-release-readiness.py
+          python3 scripts/abe/build-public-release-gate.py
+          python3 scripts/abe/validate-public-release-gate.py
+          python3 scripts/abe/build-public-release-custody.py
+          python3 scripts/abe/validate-public-release-custody.py
+          python3 scripts/abe/build-public-release-custody-history.py
+          python3 scripts/abe/validate-public-release-custody-history.py
+          python3 scripts/abe/build-public-release-custody-checkpoint.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint.py
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint-continuity.py
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity-history.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint-continuity-history.py
+          python3 scripts/abe/build-public-release-checkpoint-history-anchor.py
+          python3 scripts/abe/validate-public-release-checkpoint-history-anchor.py
+          python3 scripts/abe/build-anchored-public-release-snapshot.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot.py
+      - name: Build and independently validate ABE-028 continuity
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity.py
+          cp build/abe/anchored-public-release-snapshot-continuity.json /tmp/continuity.json
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity.py
+          cmp -s /tmp/continuity.json build/abe/anchored-public-release-snapshot-continuity.json
+      - name: Reject non-PUBLIC and consequential authority mutations
+        run: |
+          set -euo pipefail
+          cp build/abe/anchored-public-release-snapshot-continuity.json /tmp/continuity-good.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity.json')
+          c=json.loads(p.read_text())
+          c['classification_boundary']='INTERNAL'
+          p.write_text(json.dumps(c,indent=2)+'\n')
+          PY
+          if python3 scripts/abe/validate-anchored-public-release-snapshot-continuity.py; then
+            echo 'validator accepted non-PUBLIC continuity mutation' >&2; exit 1
+          fi
+          cp /tmp/continuity-good.json build/abe/anchored-public-release-snapshot-continuity.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity.json')
+          c=json.loads(p.read_text())
+          c['authorizes_deployment']=True
+          p.write_text(json.dumps(c,indent=2)+'\n')
+          PY
+          if python3 scripts/abe/validate-anchored-public-release-snapshot-continuity.py; then
+            echo 'validator accepted deployment authority mutation' >&2; exit 1
+          fi
+          cp /tmp/continuity-good.json build/abe/anchored-public-release-snapshot-continuity.json
+      - name: Reject current snapshot identity mutation
+        run: |
+          set -euo pipefail
+          cp build/abe/anchored-public-release-snapshot-continuity.json /tmp/continuity-good.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity.json')
+          c=json.loads(p.read_text())
+          c['current_snapshot_identity']['digest']='0'*64
+          p.write_text(json.dumps(c,indent=2)+'\n')
+          PY
+          if python3 scripts/abe/validate-anchored-public-release-snapshot-continuity.py; then
+            echo 'validator accepted mutated current snapshot identity' >&2; exit 1
+          fi
+          cp /tmp/continuity-good.json build/abe/anchored-public-release-snapshot-continuity.json
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity.py
+      - name: Assert authoritative fail-closed invariants
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('config/abe/task-queue.json').read_text())
+          assert q['authoritative_department_scope']==['DO-DEP-01','DO-DEP-14']
+          assert q['verified_baseline']=='DO-DEP-04'
+          assert q['rules']=={'public_exposure':'explicit-public-only','external_writes':False,'production_deploy':False,'destructive_actions':False}
+          c=json.loads(Path('build/abe/anchored-public-release-snapshot-continuity.json').read_text())
+          assert c['stage']=='ABE-028'
+          assert c['continuity_state']=='PASS_REPOSITORY_LOCAL_ONLY'
+          assert c['predecessor_state']=='GENESIS'
+          assert c['predecessor_snapshot_identity'] is None
+          assert c['classification_boundary']=='PUBLIC_ONLY'
+          assert c['authorizes_deployment'] is False
+          assert c['external_write_performed'] is False
+          assert c['production_deploy_performed'] is False
+          assert c['publication_performed'] is False
+          assert c['destructive_action_performed'] is False
+          assert c['secret_access_performed'] is False
+          PY
