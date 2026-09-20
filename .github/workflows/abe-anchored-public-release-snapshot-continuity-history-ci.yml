@@ -1,0 +1,114 @@
+name: ABE Anchored Public Release Snapshot Continuity History CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build validated prerequisite evidence chain
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-manifest.py
+          python3 scripts/abe/validate-public-provenance.py
+          python3 scripts/abe/build-public-release-bundle.py
+          python3 scripts/abe/validate-public-release-bundle.py
+          python3 scripts/abe/build-public-release-readiness.py
+          python3 scripts/abe/validate-public-release-readiness.py
+          python3 scripts/abe/build-public-release-gate.py
+          python3 scripts/abe/validate-public-release-gate.py
+          python3 scripts/abe/build-public-release-custody.py
+          python3 scripts/abe/validate-public-release-custody.py
+          python3 scripts/abe/build-public-release-custody-history.py
+          python3 scripts/abe/validate-public-release-custody-history.py
+          python3 scripts/abe/build-public-release-custody-checkpoint.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint.py
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint-continuity.py
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity-history.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint-continuity-history.py
+          python3 scripts/abe/build-public-release-checkpoint-history-anchor.py
+          python3 scripts/abe/validate-public-release-checkpoint-history-anchor.py
+          python3 scripts/abe/build-anchored-public-release-snapshot.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity.py
+      - name: Build and independently validate ABE-029 history
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history.py
+          cp build/abe/anchored-public-release-snapshot-continuity-history.json /tmp/history.json
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history.py
+          cmp -s /tmp/history.json build/abe/anchored-public-release-snapshot-continuity-history.json
+      - name: Reject history mutation
+        run: |
+          set -euo pipefail
+          cp build/abe/anchored-public-release-snapshot-continuity-history.json /tmp/history-good.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity-history.json')
+          h=json.loads(p.read_text())
+          h['records'][0]['digest']='0'*64
+          p.write_text(json.dumps(h,indent=2)+'\n')
+          PY
+          if python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history.py; then
+            echo 'validator accepted mutated history record' >&2; exit 1
+          fi
+          cp /tmp/history-good.json build/abe/anchored-public-release-snapshot-continuity-history.json
+      - name: Reject non-PUBLIC and consequential authority mutations
+        run: |
+          set -euo pipefail
+          cp build/abe/anchored-public-release-snapshot-continuity-history.json /tmp/history-good.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity-history.json')
+          h=json.loads(p.read_text())
+          h['classification_boundary']='INTERNAL'
+          p.write_text(json.dumps(h,indent=2)+'\n')
+          PY
+          if python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history.py; then
+            echo 'validator accepted non-PUBLIC history mutation' >&2; exit 1
+          fi
+          cp /tmp/history-good.json build/abe/anchored-public-release-snapshot-continuity-history.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity-history.json')
+          h=json.loads(p.read_text())
+          h['authorizes_deployment']=True
+          p.write_text(json.dumps(h,indent=2)+'\n')
+          PY
+          if python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history.py; then
+            echo 'validator accepted deployment authority mutation' >&2; exit 1
+          fi
+          cp /tmp/history-good.json build/abe/anchored-public-release-snapshot-continuity-history.json
+      - name: Assert authoritative fail-closed invariants
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('config/abe/task-queue.json').read_text())
+          assert q['authoritative_department_scope']==['DO-DEP-01','DO-DEP-14']
+          assert q['verified_baseline']=='DO-DEP-04'
+          assert q['rules']=={'public_exposure':'explicit-public-only','external_writes':False,'production_deploy':False,'destructive_actions':False}
+          h=json.loads(Path('build/abe/anchored-public-release-snapshot-continuity-history.json').read_text())
+          assert h['stage']=='ABE-029'
+          assert h['history_state']=='PASS_REPOSITORY_LOCAL_ONLY'
+          assert h['classification_boundary']=='PUBLIC_ONLY'
+          assert h['authorizes_deployment'] is False
+          assert h['external_write_performed'] is False
+          assert h['production_deploy_performed'] is False
+          assert h['publication_performed'] is False
+          assert h['destructive_action_performed'] is False
+          assert h['secret_access_performed'] is False
+          PY
