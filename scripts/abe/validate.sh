@@ -24,6 +24,29 @@ python3 scripts/abe/validate-public-release-readiness.py
 python3 scripts/abe/discover-department-evidence.py
 python3 scripts/abe/select-next-task.py
 python3 scripts/abe/runner.py
+# An exhausted authoritative queue is a valid fail-closed SAFE_IDLE state, not a
+# validation failure. All policy, PUBLIC-only, provenance, bundle, readiness,
+# department-scope and baseline gates above have already passed. Do not invoke
+# task-execution stages when there is deliberately no READY task.
+if python3 - <<'PY'
+import json
+from pathlib import Path
+selector=json.loads(Path('generated/abe/runner-state.json').read_text())
+runner=json.loads(Path('build/abe/runner-state.json').read_text())
+replenishment=json.loads(Path('build/abe/queue-replenishment-state.json').read_text())
+assert selector['blocked'] is False and selector['selected_task'] is None
+assert runner['safe_to_proceed'] is False and runner['selected_task'] is None and runner['blocked_reason'] is None
+assert replenishment['status']=='SAFE_IDLE' and replenishment['ready_task_ids']==[] and replenishment['idle'] is True
+assert replenishment['replenishment_policy']=='REVIEWED_REPOSITORY_CHANGE_ONLY'
+assert replenishment['authoritative_mutation_performed'] is False and replenishment['scope_expansion_allowed'] is False
+assert replenishment['authoritative_department_scope']==['DO-DEP-01','DO-DEP-14'] and replenishment['verified_baseline']=='DO-DEP-04'
+assert replenishment['external_writes'] is False and replenishment['production_deploy'] is False and replenishment['destructive_actions'] is False
+print('ABE SAFE_IDLE gate: PASS (no READY task; reviewed repository replenishment required)')
+PY
+then
+  echo "ABE validation PASS — SAFE_IDLE"
+  exit 0
+fi
 python3 scripts/abe/plan-execution.py
 python3 scripts/abe/write-audit-ledger.py
 python3 scripts/abe/write-execution-receipt.py
