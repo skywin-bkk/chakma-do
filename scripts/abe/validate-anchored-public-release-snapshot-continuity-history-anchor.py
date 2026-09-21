@@ -14,7 +14,9 @@ q=json.loads(QUEUE.read_text(encoding="utf-8")); h=json.loads(HISTORY.read_text(
 if q.get("authoritative_department_scope") != ["DO-DEP-01","DO-DEP-14"] or q.get("verified_baseline") != "DO-DEP-04": raise SystemExit("scope/baseline changed")
 if q.get("rules") != {"public_exposure":"explicit-public-only","external_writes":False,"production_deploy":False,"destructive_actions":False}: raise SystemExit("safety gate changed")
 task=next((x for x in q.get("queue",[]) if x.get("id")=="ABE-030"),None)
-if not task or task.get("status")!="READY" or task.get("safe_autonomous") is not True: raise SystemExit("ABE-030 not authoritative READY")
+# ABE-030 evidence remains independently verifiable after its reviewed,
+# validated READY -> COMPLETE_FOUNDATION transition. No other status is valid.
+if not task or task.get("status") not in {"READY","COMPLETE_FOUNDATION"} or task.get("safe_autonomous") is not True: raise SystemExit("ABE-030 not in an authoritative verifiable state")
 flags=("external_write_performed","production_deploy_performed","publication_performed","destructive_action_performed","secret_access_performed","authorizes_deployment")
 if h.get("schema_version")!=1 or h.get("stage")!="ABE-029" or h.get("history_state")!="PASS_REPOSITORY_LOCAL_ONLY": raise SystemExit("invalid ABE-029 history")
 if h.get("publication_policy")!="explicit-public-only" or h.get("classification_boundary")!="PUBLIC_ONLY" or any(h.get(k) is not False for k in flags): raise SystemExit("unsafe history")
