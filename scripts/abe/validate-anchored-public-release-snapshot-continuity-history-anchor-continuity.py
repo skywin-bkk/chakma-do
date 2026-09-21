@@ -26,8 +26,8 @@ if q.get("authoritative_department_scope") != ["DO-DEP-01", "DO-DEP-14"] or q.ge
 if q.get("rules") != {"public_exposure":"explicit-public-only", "external_writes":False, "production_deploy":False, "destructive_actions":False}:
     raise SystemExit("safety gate changed")
 task = next((x for x in q.get("queue", []) if x.get("id") == "ABE-031"), None)
-if not task or task.get("status") != "READY" or task.get("safe_autonomous") is not True:
-    raise SystemExit("ABE-031 not authoritative READY")
+if not task or task.get("status") not in {"READY", "COMPLETE_FOUNDATION"} or task.get("safe_autonomous") is not True:
+    raise SystemExit("ABE-031 not authoritative READY or COMPLETE_FOUNDATION")
 
 flags = ("external_write_performed", "production_deploy_performed", "publication_performed", "destructive_action_performed", "secret_access_performed", "authorizes_deployment")
 if current.get("schema_version") != 1 or current.get("stage") != "ABE-030" or current.get("anchor_state") != "PASS_REPOSITORY_LOCAL_ONLY":
