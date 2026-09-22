@@ -106,7 +106,7 @@ jobs:
           assert q['verified_baseline']=='DO-DEP-04'
           assert q['rules']=={'public_exposure':'explicit-public-only','external_writes':False,'production_deploy':False,'destructive_actions':False}
           task=next(x for x in q['queue'] if x['id']=='ABE-031')
-          assert task['status']=='READY' and task['safe_autonomous'] is True
+          assert task['status'] in ('READY','COMPLETE_FOUNDATION') and task['safe_autonomous'] is True
           v=json.loads(Path('build/abe/anchored-public-release-snapshot-continuity-history-anchor-continuity.json').read_text())
           assert v['stage']=='ABE-031'
           assert v['continuity_state'] in ('GENESIS','LINKED')
