@@ -1,0 +1,120 @@
+name: ABE Anchored Public Release Snapshot Continuity History Checkpoint CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build validated prerequisite evidence chain
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-manifest.py
+          python3 scripts/abe/validate-public-provenance.py
+          python3 scripts/abe/build-public-release-bundle.py
+          python3 scripts/abe/validate-public-release-bundle.py
+          python3 scripts/abe/build-public-release-readiness.py
+          python3 scripts/abe/validate-public-release-readiness.py
+          python3 scripts/abe/build-public-release-gate.py
+          python3 scripts/abe/validate-public-release-gate.py
+          python3 scripts/abe/build-public-release-custody.py
+          python3 scripts/abe/validate-public-release-custody.py
+          python3 scripts/abe/build-public-release-custody-history.py
+          python3 scripts/abe/validate-public-release-custody-history.py
+          python3 scripts/abe/build-public-release-custody-checkpoint.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint.py
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint-continuity.py
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity-history.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint-continuity-history.py
+          python3 scripts/abe/build-public-release-checkpoint-history-anchor.py
+          python3 scripts/abe/validate-public-release-checkpoint-history-anchor.py
+          python3 scripts/abe/build-anchored-public-release-snapshot.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-anchor.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-anchor.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-anchor-continuity.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-anchor-continuity.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-anchor-continuity-history.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-anchor-continuity-history.py
+      - name: Build and independently validate ABE-033 checkpoint deterministically
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-checkpoint.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint.py
+          cp build/abe/anchored-public-release-snapshot-continuity-history-checkpoint.json /tmp/checkpoint.json
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-checkpoint.py
+          cmp -s /tmp/checkpoint.json build/abe/anchored-public-release-snapshot-continuity-history-checkpoint.json
+      - name: Reject checkpoint terminal linkage mutation
+        run: |
+          set -euo pipefail
+          cp build/abe/anchored-public-release-snapshot-continuity-history-checkpoint.json /tmp/checkpoint-good.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity-history-checkpoint.json')
+          v=json.loads(p.read_text())
+          v['terminal_history_sequence'] += 1
+          p.write_text(json.dumps(v,indent=2)+'\n')
+          PY
+          if python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint.py; then
+            echo 'validator accepted mutated terminal history linkage' >&2; exit 1
+          fi
+          cp /tmp/checkpoint-good.json build/abe/anchored-public-release-snapshot-continuity-history-checkpoint.json
+      - name: Reject non-PUBLIC and consequential authority mutations
+        run: |
+          set -euo pipefail
+          cp build/abe/anchored-public-release-snapshot-continuity-history-checkpoint.json /tmp/checkpoint-good.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity-history-checkpoint.json')
+          v=json.loads(p.read_text())
+          v['classification_boundary']='INTERNAL'
+          p.write_text(json.dumps(v,indent=2)+'\n')
+          PY
+          if python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint.py; then
+            echo 'validator accepted non-PUBLIC checkpoint evidence' >&2; exit 1
+          fi
+          cp /tmp/checkpoint-good.json build/abe/anchored-public-release-snapshot-continuity-history-checkpoint.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity-history-checkpoint.json')
+          v=json.loads(p.read_text())
+          v['authorizes_deployment']=True
+          p.write_text(json.dumps(v,indent=2)+'\n')
+          PY
+          if python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint.py; then
+            echo 'validator accepted deployment authority mutation' >&2; exit 1
+          fi
+          cp /tmp/checkpoint-good.json build/abe/anchored-public-release-snapshot-continuity-history-checkpoint.json
+      - name: Assert authoritative fail-closed invariants
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('config/abe/task-queue.json').read_text())
+          assert q['authoritative_department_scope']==['DO-DEP-01','DO-DEP-14']
+          assert q['verified_baseline']=='DO-DEP-04'
+          assert q['rules']=={'public_exposure':'explicit-public-only','external_writes':False,'production_deploy':False,'destructive_actions':False}
+          task=next(x for x in q['queue'] if x['id']=='ABE-033')
+          assert task['status'] in ('READY','COMPLETE_FOUNDATION') and task['safe_autonomous'] is True
+          v=json.loads(Path('build/abe/anchored-public-release-snapshot-continuity-history-checkpoint.json').read_text())
+          assert v['stage']=='ABE-033'
+          assert v['checkpoint_state']=='SEALED'
+          assert v['classification_boundary']=='PUBLIC_ONLY'
+          for k in ('external_write_performed','production_deploy_performed','publication_performed','destructive_action_performed','secret_access_performed','authorizes_deployment'):
+              assert v[k] is False
+          PY
