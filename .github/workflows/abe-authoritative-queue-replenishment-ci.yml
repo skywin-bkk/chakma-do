@@ -1,0 +1,63 @@
+name: ABE Authoritative Queue Replenishment CI
+
+on:
+  push:
+    paths:
+      - 'config/abe/task-queue.json'
+      - 'scripts/abe/build-authoritative-queue-replenishment.py'
+      - '.github/workflows/abe-authoritative-queue-replenishment-ci.yml'
+  pull_request:
+    paths:
+      - 'config/abe/task-queue.json'
+      - 'scripts/abe/build-authoritative-queue-replenishment.py'
+      - '.github/workflows/abe-authoritative-queue-replenishment-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-replenishment-builder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Positive metadata-preserving append
+        run: |
+          python scripts/abe/build-authoritative-queue-replenishment.py \
+            --ready ABE-037 \
+            --ready-title 'Checkpoint Continuity History Checkpoint Continuity Foundation' \
+            --ready-acceptance 'Accept only independently validated ABE-036 PUBLIC checkpoint evidence' \
+            --ready-acceptance 'Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline' \
+            --out /tmp/candidate.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          source=json.loads(Path('config/abe/task-queue.json').read_text())
+          candidate=json.loads(Path('/tmp/candidate.json').read_text())
+          assert candidate['queue'][:-1] == source['queue']
+          assert {k:v for k,v in candidate.items() if k!='queue'} == {k:v for k,v in source.items() if k!='queue'}
+          assert candidate['queue'][-1]['id'] == 'ABE-037'
+          assert candidate['queue'][-1]['status'] == 'READY'
+          assert candidate['queue'][-1]['safe_autonomous'] is True
+          PY
+      - name: Reject missing acceptance contract
+        run: |
+          if python scripts/abe/build-authoritative-queue-replenishment.py --ready ABE-037 --ready-title test --out /tmp/bad.json; then
+            echo 'FAIL: missing acceptance contract was accepted'; exit 1
+          fi
+      - name: Reject duplicate task ID
+        run: |
+          if python scripts/abe/build-authoritative-queue-replenishment.py --ready ABE-036 --ready-title test --ready-acceptance test --out /tmp/bad.json; then
+            echo 'FAIL: duplicate task ID was accepted'; exit 1
+          fi
+      - name: Reject authoritative safety drift
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('config/abe/task-queue.json').read_text())
+          q['rules']['external_writes']=True
+          Path('/tmp/drift.json').write_text(json.dumps(q))
+          PY
+          if python scripts/abe/build-authoritative-queue-replenishment.py --queue /tmp/drift.json --ready ABE-037 --ready-title test --ready-acceptance test --out /tmp/bad.json; then
+            echo 'FAIL: safety drift was accepted'; exit 1
+          fi
