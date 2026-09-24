@@ -280,6 +280,22 @@
         "Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"
       ],
       "note": "ABE-037 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."
+    },
+    {
+      "id": "ABE-038",
+      "title": "Checkpoint continuity history foundation",
+      "status": "READY",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Accept only independently validated ABE-037 PUBLIC checkpoint-continuity evidence",
+        "Emit deterministic repository-local append-only checkpoint-continuity history from identical validated inputs",
+        "Bind every history entry to the exact ABE-037 continuity sequence and identity/digest, exact predecessor ABE-036 checkpoint identity/digest, terminal ABE-035 history identity/digest, current ABE-034 continuity identity/digest, terminal ABE-032 history identity/digest, ABE-031 anchor-continuity identity/digest, and current ABE-030 anchor identity/digest represented by validated ABE-037 evidence",
+        "Require strictly monotonic history sequence numbers and exact predecessor-history continuity; permit only an explicit deterministic genesis history entry when no predecessor ABE-038 history exists",
+        "Produce byte-identical history evidence from identical validated inputs using canonical serialization and SHA-256 identities",
+        "Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale/substituted continuity evidence, predecessor-history mismatch, checkpoint mismatch, terminal-history mismatch, upstream identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed",
+        "Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure",
+        "Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"
+      ]
     }
   ]
 }
