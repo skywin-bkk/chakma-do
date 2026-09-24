@@ -1,0 +1,39 @@
+name: ABE-039 Authoritative Queue Replenishment
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  replenish:
+    if: github.event.head_commit.message == 'Execute validated ABE-039 queue replenishment'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Apply fail-closed bounded replenishment
+        run: python3 scripts/abe/replenish-abe039.py
+      - name: Verify only authoritative queue changed
+        run: |
+          test "$(git diff --name-only)" = "config/abe/task-queue.json"
+          python3 - <<'PY'
+          import json
+          q=json.load(open('config/abe/task-queue.json'))
+          assert q['authoritative_department_scope']==['DO-DEP-01','DO-DEP-14']
+          assert q['verified_baseline']=='DO-DEP-04'
+          assert q['rules']=={'public_exposure':'explicit-public-only','external_writes':False,'production_deploy':False,'destructive_actions':False}
+          t=[x for x in q['queue'] if x['id']=='ABE-039']
+          assert len(t)==1 and t[0]['status']=='READY' and t[0]['safe_autonomous'] is True
+          assert q['queue'][-1]['id']=='ABE-039'
+          PY
+      - name: Commit bounded replenishment
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/abe/task-queue.json
+          git commit -m "Replenish ABE-039 after validated gate"
+          git push origin HEAD:main
