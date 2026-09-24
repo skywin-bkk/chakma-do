@@ -284,7 +284,7 @@
     {
       "id": "ABE-038",
       "title": "Checkpoint continuity history foundation",
-      "status": "READY",
+      "status": "COMPLETE_FOUNDATION",
       "safe_autonomous": true,
       "acceptance": [
         "Accept only independently validated ABE-037 PUBLIC checkpoint-continuity evidence",
@@ -295,7 +295,8 @@
         "Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale/substituted continuity evidence, predecessor-history mismatch, checkpoint mismatch, terminal-history mismatch, upstream identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed",
         "Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure",
         "Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"
-      ]
+      ],
+      "note": "ABE-038 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."
     }
   ]
 }
