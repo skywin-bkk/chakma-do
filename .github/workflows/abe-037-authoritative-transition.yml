@@ -1,0 +1,38 @@
+name: ABE-037 Authoritative Completion Transition
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  transition:
+    if: github.event.head_commit.message == 'Execute validated ABE-037 completion transition'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Apply fail-closed bounded transition
+        run: python3 scripts/abe/complete-abe037-transition.py
+      - name: Verify only authoritative queue changed
+        run: |
+          test "$(git diff --name-only)" = "config/abe/task-queue.json"
+          python3 - <<'PY'
+          import json
+          q=json.load(open('config/abe/task-queue.json'))
+          assert q['authoritative_department_scope']==['DO-DEP-01','DO-DEP-14']
+          assert q['verified_baseline']=='DO-DEP-04'
+          assert q['rules']=={'public_exposure':'explicit-public-only','external_writes':False,'production_deploy':False,'destructive_actions':False}
+          t=[x for x in q['queue'] if x['id']=='ABE-037']
+          assert len(t)==1 and t[0]['status']=='COMPLETE_FOUNDATION'
+          PY
+      - name: Commit bounded transition
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/abe/task-queue.json
+          git commit -m "Complete ABE-037 after validated transition gate"
+          git push origin HEAD:main
