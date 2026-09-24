@@ -1,0 +1,76 @@
+name: ABE-038 Transition Utility CI
+
+on:
+  push:
+    paths:
+      - 'scripts/abe/complete-abe038-transition.py'
+      - 'config/abe/task-queue.json'
+      - '.github/workflows/abe-038-transition-utility-ci.yml'
+  pull_request:
+    paths:
+      - 'scripts/abe/complete-abe038-transition.py'
+      - 'config/abe/task-queue.json'
+      - '.github/workflows/abe-038-transition-utility-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-bounded-transition:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Snapshot authoritative queue
+        run: cp config/abe/task-queue.json /tmp/task-queue.before.json
+      - name: Run fail-closed ABE-038 transition utility
+        run: python3 scripts/abe/complete-abe038-transition.py
+      - name: Validate exact bounded mutation
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          before = json.loads(Path('/tmp/task-queue.before.json').read_text())
+          after = json.loads(Path('config/abe/task-queue.json').read_text())
+
+          assert before['authoritative_department_scope'] == ['DO-DEP-01', 'DO-DEP-14']
+          assert after['authoritative_department_scope'] == before['authoritative_department_scope']
+          assert before['verified_baseline'] == after['verified_baseline'] == 'DO-DEP-04'
+          assert before['rules'] == after['rules'] == {
+              'public_exposure': 'explicit-public-only',
+              'external_writes': False,
+              'production_deploy': False,
+              'destructive_actions': False,
+          }
+
+          b = [t for t in before['queue'] if t.get('id') == 'ABE-038']
+          a = [t for t in after['queue'] if t.get('id') == 'ABE-038']
+          assert len(b) == len(a) == 1
+          assert b[0]['status'] == 'READY'
+          assert a[0]['status'] == 'COMPLETE_FOUNDATION'
+          assert 'note' not in b[0]
+          assert a[0]['note'] == (
+              'ABE-038 implementation and fresh completion gate validated on authoritative '
+              'main before metadata-preserving completion transition.'
+          )
+
+          expected = json.loads(json.dumps(before))
+          target = next(t for t in expected['queue'] if t.get('id') == 'ABE-038')
+          target['status'] = 'COMPLETE_FOUNDATION'
+          target['note'] = a[0]['note']
+          assert after == expected, 'transition mutated fields outside the authorized ABE-038 status/note pair'
+          print('PASS: ABE-038 transition utility mutation is exact and bounded')
+          PY
+      - name: Verify repository safety invariants remain locked
+        run: |
+          python3 - <<'PY'
+          import json
+          q=json.load(open('config/abe/task-queue.json'))
+          assert q['authoritative_department_scope'] == ['DO-DEP-01','DO-DEP-14']
+          assert q['verified_baseline'] == 'DO-DEP-04'
+          assert q['rules']['public_exposure'] == 'explicit-public-only'
+          assert q['rules']['external_writes'] is False
+          assert q['rules']['production_deploy'] is False
+          assert q['rules']['destructive_actions'] is False
+          print('PASS: authoritative scope, baseline, and safety invariants preserved')
+          PY
