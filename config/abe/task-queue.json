@@ -1,42 +1,285 @@
 {
   "schema_version": 1,
   "mode": "controlled-autonomous",
-  "authoritative_department_scope": ["DO-DEP-01", "DO-DEP-14"],
+  "authoritative_department_scope": [
+    "DO-DEP-01",
+    "DO-DEP-14"
+  ],
   "verified_baseline": "DO-DEP-04",
-  "rules": {"public_exposure":"explicit-public-only","external_writes":false,"production_deploy":false,"destructive_actions":false},
+  "rules": {
+    "public_exposure": "explicit-public-only",
+    "external_writes": false,
+    "production_deploy": false,
+    "destructive_actions": false
+  },
   "queue": [
-    {"id":"ABE-005","title":"Repository source inventory","status":"COMPLETE","safe_autonomous":true},
-    {"id":"ABE-006","title":"Website integration pipeline scaffold","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"note":"Fail-closed public allowlist and public manifest builder are repository-controlled; production deployment remains disabled."},
-    {"id":"ABE-007","title":"Department build manifest DO-DEP-01 through DO-DEP-14","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"note":"Exactly 14 department IDs recorded; only DO-DEP-04 is marked verified baseline and missing evidence is not fabricated."},
-    {"id":"ABE-008","title":"Department evidence discovery and manifest reconciliation","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"acceptance":["Discover repository evidence for DO-DEP-01 through DO-DEP-14","Upgrade evidence status only from verifiable sources","Preserve exactly 14 authoritative departments","Do not perform external writes"],"note":"Fail-closed discovery script added and enforced by CI. Repository references are treated only as leads; no unverified department status was upgraded."},
-    {"id":"ABE-009","title":"Autonomous runner orchestration foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-010","title":"Guarded execution plan and audit ledger foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-011","title":"Execution receipt and controlled task transition foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-012","title":"Controlled queue transition engine","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-013","title":"Continuous runner heartbeat and bounded work-loop foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-014","title":"Validated multi-step queue advancement foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-015","title":"Validated queue replenishment and idle-state foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-016","title":"Validated public build artifact provenance foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-017","title":"Public build artifact integrity digest foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-018","title":"Public build release bundle manifest foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-019","title":"Public release readiness attestation foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-020","title":"Public release gate evidence foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-021","title":"Public release gate chain-of-custody foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-022","title":"Public release custody continuity and append-only history foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-023","title":"Public release custody history checkpoint foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-024","title":"Public release custody checkpoint continuity foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"note":"ABE-024 implementation and fresh completion gate validated on authoritative main before bounded queue transition."},
-    {"id":"ABE-025","title":"Public release checkpoint continuity append-only history foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-026","title":"Public release checkpoint-history anchor foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-027","title":"Anchored public release snapshot foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-028","title":"Anchored public release snapshot continuity foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-029","title":"Anchored public release snapshot continuity history foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-030","title":"Anchored public release snapshot continuity history anchor foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-031","title":"Snapshot continuity history anchor continuity foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true},
-    {"id":"ABE-032","title":"Snapshot continuity history anchor continuity history foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"acceptance":["Accept only independently validated ABE-031 PUBLIC anchor-continuity evidence","Emit deterministic repository-local append-only anchor-continuity history from identical validated inputs","Bind every history entry to the exact ABE-031 anchor-continuity identity/digest and exact current ABE-030 anchor identity/digest","Require strictly monotonic history sequence numbers and exact predecessor-history continuity; permit only an explicit deterministic genesis history entry when no predecessor history exists","Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale/substituted continuity evidence, self-reference, identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed","Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure","Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"],"note":"ABE-032 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."},
-    {"id":"ABE-033","title":"Anchor continuity history checkpoint foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"acceptance":["Accept only independently validated ABE-032 PUBLIC anchor-continuity-history evidence","Bind the exact terminal ABE-032 history sequence, history identity/digest, ABE-031 anchor-continuity identity/digest, and current ABE-030 anchor identity/digest into one deterministic repository-local checkpoint","Produce byte-identical checkpoint evidence from identical validated inputs","Reject stale/substituted history, rollback, fork, gap, reorder, duplication, deletion, mutation, terminal-sequence mismatch, identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed","Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure","Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"],"note":"ABE-033 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."},
-    {"id":"ABE-034","title":"Anchor continuity history checkpoint continuity foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"acceptance":["Accept only independently validated ABE-033 PUBLIC checkpoint evidence","Maintain a strictly monotonic repository-local checkpoint-continuity sequence and bind every successor to the exact predecessor checkpoint identity/digest","Bind continuity to the exact terminal ABE-032 history sequence/digest, ABE-031 anchor-continuity identity/digest, and current ABE-030 anchor identity/digest represented by the validated ABE-033 checkpoint","Produce byte-identical continuity evidence from identical validated inputs using canonical serialization and SHA-256 identities","Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale/substituted checkpoint evidence, predecessor mismatch, terminal-history mismatch, identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed","Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure","Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"],"note":"ABE-034 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."},
-    {"id":"ABE-035","title":"Checkpoint continuity history foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"acceptance":["Accept only independently validated ABE-034 PUBLIC checkpoint-continuity evidence","Emit deterministic repository-local append-only checkpoint-continuity history from identical validated inputs","Bind every history entry to the exact ABE-034 continuity sequence, continuity identity/digest, predecessor checkpoint identity/digest, terminal ABE-032 history identity/digest, ABE-031 anchor-continuity identity/digest, and current ABE-030 anchor identity/digest represented by validated continuity evidence","Require strictly monotonic history sequence numbers and exact predecessor-history continuity; permit only an explicit deterministic genesis history entry when no predecessor history exists","Produce byte-identical history evidence from identical validated inputs using canonical serialization and SHA-256 identities","Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale/substituted continuity evidence, predecessor-history mismatch, checkpoint mismatch, terminal-history mismatch, identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed","Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure","Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"],"note":"ABE-035 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."},
-    {"id":"ABE-036","title":"Checkpoint continuity history checkpoint foundation","status":"COMPLETE_FOUNDATION","safe_autonomous":true,"acceptance":["Accept only independently validated ABE-035 PUBLIC checkpoint-continuity-history evidence","Bind the exact terminal ABE-035 history sequence and history identity/digest, current ABE-034 continuity sequence and identity/digest, predecessor checkpoint identity/digest, terminal ABE-032 history identity/digest, ABE-031 anchor-continuity identity/digest, and current ABE-030 anchor identity/digest into one deterministic repository-local checkpoint","Produce byte-identical checkpoint evidence from identical validated inputs using canonical serialization and SHA-256 identities","Require the checkpoint to represent the exact terminal validated ABE-035 history entry; reject stale or substituted history and any terminal-sequence mismatch","Reject rollback, fork, gap, reorder, duplication, deletion, mutation, history-linkage mismatch, checkpoint-continuity mismatch, upstream identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed","Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure","Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"],"note":"ABE-036 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."},
-    {"id":"ABE-037","title":"Checkpoint continuity history checkpoint continuity foundation","status":"READY","safe_autonomous":true,"acceptance":["Accept only independently validated ABE-036 PUBLIC checkpoint evidence","Maintain a strictly monotonic repository-local checkpoint-continuity sequence and bind every successor to the exact predecessor ABE-036 checkpoint identity/digest","Bind continuity to the exact terminal ABE-035 history sequence and identity/digest, current ABE-034 continuity sequence and identity/digest, predecessor checkpoint identity/digest, terminal ABE-032 history identity/digest, ABE-031 anchor-continuity identity/digest, and current ABE-030 anchor identity/digest represented by the validated ABE-036 checkpoint","Produce byte-identical continuity evidence from identical validated inputs using canonical serialization and SHA-256 identities","Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale/substituted checkpoint evidence, predecessor mismatch, terminal-history mismatch, upstream identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed","Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure","Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"]}
+    {
+      "id": "ABE-005",
+      "title": "Repository source inventory",
+      "status": "COMPLETE",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-006",
+      "title": "Website integration pipeline scaffold",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true,
+      "note": "Fail-closed public allowlist and public manifest builder are repository-controlled; production deployment remains disabled."
+    },
+    {
+      "id": "ABE-007",
+      "title": "Department build manifest DO-DEP-01 through DO-DEP-14",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true,
+      "note": "Exactly 14 department IDs recorded; only DO-DEP-04 is marked verified baseline and missing evidence is not fabricated."
+    },
+    {
+      "id": "ABE-008",
+      "title": "Department evidence discovery and manifest reconciliation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Discover repository evidence for DO-DEP-01 through DO-DEP-14",
+        "Upgrade evidence status only from verifiable sources",
+        "Preserve exactly 14 authoritative departments",
+        "Do not perform external writes"
+      ],
+      "note": "Fail-closed discovery script added and enforced by CI. Repository references are treated only as leads; no unverified department status was upgraded."
+    },
+    {
+      "id": "ABE-009",
+      "title": "Autonomous runner orchestration foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-010",
+      "title": "Guarded execution plan and audit ledger foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-011",
+      "title": "Execution receipt and controlled task transition foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-012",
+      "title": "Controlled queue transition engine",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-013",
+      "title": "Continuous runner heartbeat and bounded work-loop foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-014",
+      "title": "Validated multi-step queue advancement foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-015",
+      "title": "Validated queue replenishment and idle-state foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-016",
+      "title": "Validated public build artifact provenance foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-017",
+      "title": "Public build artifact integrity digest foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-018",
+      "title": "Public build release bundle manifest foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-019",
+      "title": "Public release readiness attestation foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-020",
+      "title": "Public release gate evidence foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-021",
+      "title": "Public release gate chain-of-custody foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-022",
+      "title": "Public release custody continuity and append-only history foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-023",
+      "title": "Public release custody history checkpoint foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-024",
+      "title": "Public release custody checkpoint continuity foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true,
+      "note": "ABE-024 implementation and fresh completion gate validated on authoritative main before bounded queue transition."
+    },
+    {
+      "id": "ABE-025",
+      "title": "Public release checkpoint continuity append-only history foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-026",
+      "title": "Public release checkpoint-history anchor foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-027",
+      "title": "Anchored public release snapshot foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-028",
+      "title": "Anchored public release snapshot continuity foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-029",
+      "title": "Anchored public release snapshot continuity history foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-030",
+      "title": "Anchored public release snapshot continuity history anchor foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-031",
+      "title": "Snapshot continuity history anchor continuity foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true
+    },
+    {
+      "id": "ABE-032",
+      "title": "Snapshot continuity history anchor continuity history foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Accept only independently validated ABE-031 PUBLIC anchor-continuity evidence",
+        "Emit deterministic repository-local append-only anchor-continuity history from identical validated inputs",
+        "Bind every history entry to the exact ABE-031 anchor-continuity identity/digest and exact current ABE-030 anchor identity/digest",
+        "Require strictly monotonic history sequence numbers and exact predecessor-history continuity; permit only an explicit deterministic genesis history entry when no predecessor history exists",
+        "Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale/substituted continuity evidence, self-reference, identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed",
+        "Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure",
+        "Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"
+      ],
+      "note": "ABE-032 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."
+    },
+    {
+      "id": "ABE-033",
+      "title": "Anchor continuity history checkpoint foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Accept only independently validated ABE-032 PUBLIC anchor-continuity-history evidence",
+        "Bind the exact terminal ABE-032 history sequence, history identity/digest, ABE-031 anchor-continuity identity/digest, and current ABE-030 anchor identity/digest into one deterministic repository-local checkpoint",
+        "Produce byte-identical checkpoint evidence from identical validated inputs",
+        "Reject stale/substituted history, rollback, fork, gap, reorder, duplication, deletion, mutation, terminal-sequence mismatch, identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed",
+        "Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure",
+        "Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"
+      ],
+      "note": "ABE-033 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."
+    },
+    {
+      "id": "ABE-034",
+      "title": "Anchor continuity history checkpoint continuity foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Accept only independently validated ABE-033 PUBLIC checkpoint evidence",
+        "Maintain a strictly monotonic repository-local checkpoint-continuity sequence and bind every successor to the exact predecessor checkpoint identity/digest",
+        "Bind continuity to the exact terminal ABE-032 history sequence/digest, ABE-031 anchor-continuity identity/digest, and current ABE-030 anchor identity/digest represented by the validated ABE-033 checkpoint",
+        "Produce byte-identical continuity evidence from identical validated inputs using canonical serialization and SHA-256 identities",
+        "Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale/substituted checkpoint evidence, predecessor mismatch, terminal-history mismatch, identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed",
+        "Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure",
+        "Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"
+      ],
+      "note": "ABE-034 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."
+    },
+    {
+      "id": "ABE-035",
+      "title": "Checkpoint continuity history foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Accept only independently validated ABE-034 PUBLIC checkpoint-continuity evidence",
+        "Emit deterministic repository-local append-only checkpoint-continuity history from identical validated inputs",
+        "Bind every history entry to the exact ABE-034 continuity sequence, continuity identity/digest, predecessor checkpoint identity/digest, terminal ABE-032 history identity/digest, ABE-031 anchor-continuity identity/digest, and current ABE-030 anchor identity/digest represented by validated continuity evidence",
+        "Require strictly monotonic history sequence numbers and exact predecessor-history continuity; permit only an explicit deterministic genesis history entry when no predecessor history exists",
+        "Produce byte-identical history evidence from identical validated inputs using canonical serialization and SHA-256 identities",
+        "Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale/substituted continuity evidence, predecessor-history mismatch, checkpoint mismatch, terminal-history mismatch, identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed",
+        "Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure",
+        "Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"
+      ],
+      "note": "ABE-035 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."
+    },
+    {
+      "id": "ABE-036",
+      "title": "Checkpoint continuity history checkpoint foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Accept only independently validated ABE-035 PUBLIC checkpoint-continuity-history evidence",
+        "Bind the exact terminal ABE-035 history sequence and history identity/digest, current ABE-034 continuity sequence and identity/digest, predecessor checkpoint identity/digest, terminal ABE-032 history identity/digest, ABE-031 anchor-continuity identity/digest, and current ABE-030 anchor identity/digest into one deterministic repository-local checkpoint",
+        "Produce byte-identical checkpoint evidence from identical validated inputs using canonical serialization and SHA-256 identities",
+        "Require the checkpoint to represent the exact terminal validated ABE-035 history entry; reject stale or substituted history and any terminal-sequence mismatch",
+        "Reject rollback, fork, gap, reorder, duplication, deletion, mutation, history-linkage mismatch, checkpoint-continuity mismatch, upstream identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed",
+        "Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure",
+        "Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"
+      ],
+      "note": "ABE-036 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."
+    },
+    {
+      "id": "ABE-037",
+      "title": "Checkpoint continuity history checkpoint continuity foundation",
+      "status": "COMPLETE_FOUNDATION",
+      "safe_autonomous": true,
+      "acceptance": [
+        "Accept only independently validated ABE-036 PUBLIC checkpoint evidence",
+        "Maintain a strictly monotonic repository-local checkpoint-continuity sequence and bind every successor to the exact predecessor ABE-036 checkpoint identity/digest",
+        "Bind continuity to the exact terminal ABE-035 history sequence and identity/digest, current ABE-034 continuity sequence and identity/digest, predecessor checkpoint identity/digest, terminal ABE-032 history identity/digest, ABE-031 anchor-continuity identity/digest, and current ABE-030 anchor identity/digest represented by the validated ABE-036 checkpoint",
+        "Produce byte-identical continuity evidence from identical validated inputs using canonical serialization and SHA-256 identities",
+        "Reject rollback, fork, gap, reorder, duplication, deletion, mutation, stale/substituted checkpoint evidence, predecessor mismatch, terminal-history mismatch, upstream identity/digest mismatch, non-PUBLIC evidence, scope/baseline drift, or consequential-action authority fail-closed",
+        "Do not authorize or perform publication, production deployment, external writes, destructive actions, secret access, or INTERNAL/RESTRICTED exposure",
+        "Preserve DO-DEP-01 through DO-DEP-14 authoritative scope and DO-DEP-04 verified baseline"
+      ],
+      "note": "ABE-037 implementation and fresh completion gate validated on authoritative main before metadata-preserving completion transition."
+    }
   ]
 }
