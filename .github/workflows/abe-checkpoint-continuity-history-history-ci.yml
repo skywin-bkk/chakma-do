@@ -1,0 +1,126 @@
+name: ABE Checkpoint Continuity History History CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build validated prerequisite chain through ABE-037
+        run: |
+          set -euo pipefail
+          python3 scripts/abe/build-public-manifest.py
+          python3 scripts/abe/validate-public-provenance.py
+          python3 scripts/abe/build-public-release-bundle.py
+          python3 scripts/abe/validate-public-release-bundle.py
+          python3 scripts/abe/build-public-release-readiness.py
+          python3 scripts/abe/validate-public-release-readiness.py
+          python3 scripts/abe/build-public-release-gate.py
+          python3 scripts/abe/validate-public-release-gate.py
+          python3 scripts/abe/build-public-release-custody.py
+          python3 scripts/abe/validate-public-release-custody.py
+          python3 scripts/abe/build-public-release-custody-history.py
+          python3 scripts/abe/validate-public-release-custody-history.py
+          python3 scripts/abe/build-public-release-custody-checkpoint.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint.py
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint-continuity.py
+          python3 scripts/abe/build-public-release-custody-checkpoint-continuity-history.py
+          python3 scripts/abe/validate-public-release-custody-checkpoint-continuity-history.py
+          python3 scripts/abe/build-public-release-checkpoint-history-anchor.py
+          python3 scripts/abe/validate-public-release-checkpoint-history-anchor.py
+          python3 scripts/abe/build-anchored-public-release-snapshot.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-anchor.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-anchor.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-anchor-continuity.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-anchor-continuity.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-anchor-continuity-history.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-anchor-continuity-history.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-checkpoint.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-checkpoint-continuity.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint-continuity.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint.py
+          python3 scripts/abe/build-anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity.py
+          python3 scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity.py
+      - name: Build and independently validate ABE-038 deterministically
+        run: |
+          set -euo pipefail
+          B=scripts/abe/build-anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity-history.py
+          V=scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity-history.py
+          O=build/abe/anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity-history.json
+          python3 "$B"
+          python3 "$V"
+          cp "$O" /tmp/abe038.json
+          python3 "$B"
+          cmp -s /tmp/abe038.json "$O"
+      - name: Reject identity mutation and non-PUBLIC evidence
+        run: |
+          set -euo pipefail
+          O=build/abe/anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity-history.json
+          V=scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity-history.py
+          cp "$O" /tmp/good.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity-history.json')
+          v=json.loads(p.read_text()); v['current_continuity_sequence'] += 1; p.write_text(json.dumps(v,indent=2)+'\n')
+          PY
+          if python3 "$V"; then echo 'validator accepted identity mutation' >&2; exit 1; fi
+          cp /tmp/good.json "$O"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity-history.json')
+          v=json.loads(p.read_text()); v['classification_boundary']='INTERNAL'; p.write_text(json.dumps(v,indent=2)+'\n')
+          PY
+          if python3 "$V"; then echo 'validator accepted non-PUBLIC evidence' >&2; exit 1; fi
+          cp /tmp/good.json "$O"
+      - name: Reject rollback duplicate and consequential authority
+        run: |
+          set -euo pipefail
+          O=build/abe/anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity-history.json
+          V=scripts/abe/validate-anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity-history.py
+          cp "$O" /tmp/good.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity-history.json')
+          v=json.loads(p.read_text()); v['history_sequence']=0; p.write_text(json.dumps(v,indent=2)+'\n')
+          PY
+          if python3 "$V"; then echo 'validator accepted rollback sequence' >&2; exit 1; fi
+          cp /tmp/good.json "$O"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/abe/anchored-public-release-snapshot-continuity-history-checkpoint-continuity-history-checkpoint-continuity-history.json')
+          v=json.loads(p.read_text()); v['authorizes_deployment']=True; p.write_text(json.dumps(v,indent=2)+'\n')
+          PY
+          if python3 "$V"; then echo 'validator accepted deployment authority' >&2; exit 1; fi
+      - name: Assert authoritative scope and safety invariants
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('config/abe/task-queue.json').read_text())
+          assert q['authoritative_department_scope']==['DO-DEP-01','DO-DEP-14']
+          assert q['verified_baseline']=='DO-DEP-04'
+          assert q['rules']=={'public_exposure':'explicit-public-only','external_writes':False,'production_deploy':False,'destructive_actions':False}
+          t=next(x for x in q['queue'] if x['id']=='ABE-038')
+          assert t['status']=='READY' and t['safe_autonomous'] is True
+          PY
